@@ -1,0 +1,9 @@
+{
+  "name": "admin-ecommerce",
+  "private": true,
+  "description": "Versión genérica de panel administrativo de un e-commerce",
+  "scripts": {
+    "dev:backend": "cd apps/backend && npm run start:dev",
+    "dev:frontend": "cd apps/frontend && npm run dev"
+  }
+}
