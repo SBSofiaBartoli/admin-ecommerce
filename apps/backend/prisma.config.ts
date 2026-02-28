@@ -6,12 +6,15 @@ import 'dotenv/config'
 
 export default defineConfig({
   schema: path.join('prisma', 'schema.prisma'),
+  migrations: {
+    seed: 'ts-node prisma/seed.ts',
+  },
   migrate: {
     async adapter() {
-      return new PrismaPg({ connectionString: process.env.DATABASE_URL as string })
+      return new PrismaPg({ connectionString: process.env.DATABASE_URL})
     },
   },
   datasource: {
-    url: process.env.DATABASE_URL as string,
+    url: process.env.DATABASE_URL,
   },
 })
