@@ -1,7 +1,17 @@
-import { IsNumber, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
 
 export class CreateSaleDto {
-  @IsNumber()
-  @Min(0)
-  total: number;
+  @ValidateNested({ each: true })
+  @Type(() => CreateSaleItemDto)
+  items: CreateSaleItemDto[];
+}
+
+export class CreateSaleItemDto {
+  @IsUUID()
+  productId: string;
+
+  @IsInt()
+  @Min(1)
+  quantity: number;
 }
