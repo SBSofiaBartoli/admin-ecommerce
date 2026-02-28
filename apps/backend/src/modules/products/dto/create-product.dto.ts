@@ -21,5 +21,5 @@ export class CreateProductDto {
   price: number;
 
   @IsInt()
-  categoryId: number;
+  categoryId: string;
 }

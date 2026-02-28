@@ -8,14 +8,14 @@ export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    return this.prisma.product.findMany({
+    return (this.prisma.product as any).findMany({
       include: { category: true },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: number) {
-    const product = await this.prisma.product.findUnique({
+  async findOne(id: string) {
+    const product = await (this.prisma.product as any).findUnique({
       where: { id },
       include: { category: true },
     });
@@ -24,16 +24,16 @@ export class ProductsService {
   }
 
   async create(dto: CreateProductDto) {
-    return this.prisma.product.create({ data: dto });
+    return (this.prisma.product as any).create({ data: dto });
   }
 
-  async update(id: number, dto: UpdateProductDto) {
+  async update(id: string, dto: UpdateProductDto) {
     await this.findOne(id);
-    return this.prisma.product.update({ where: { id }, data: dto });
+    return (this.prisma.product as any).update({ where: { id }, data: dto });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.product.delete({ where: { id } });
+    return (this.prisma.product as any).delete({ where: { id } });
   }
 }
