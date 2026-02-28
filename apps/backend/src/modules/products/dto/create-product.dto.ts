@@ -2,9 +2,9 @@ import {
   IsString,
   IsOptional,
   IsNumber,
-  IsInt,
   MinLength,
   Min,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -20,6 +20,6 @@ export class CreateProductDto {
   @Min(0)
   price: number;
 
-  @IsInt()
+  @IsUUID()
   categoryId: string;
 }
