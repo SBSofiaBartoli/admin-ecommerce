@@ -3,25 +3,28 @@
 import { useEffect, useState } from "react";
 import { getCategories } from "../../../api/categories";
 import type { Category } from "../../../types/category";
+import CreateCategoryModal from "./CreateCategoryModal";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+
+  async function loadCategories() {
+    try {
+      setLoading(true);
+      const data = await getCategories();
+      setCategories(data);
+    } catch {
+      setError("Error cargando categorías");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-      } catch {
-        setError("Error cargando categorías");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
+    loadCategories();
   }, []);
 
   return (
@@ -29,7 +32,10 @@ export default function CategoriesPage() {
       {/* Header simple (sin abstraer aún) */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Categorías</h1>
-        <button className="px-4 py-2 rounded-md bg-black text-white text-sm">
+        <button
+          onClick={() => setOpen(true)}
+          className="px-4 py-2 rounded-md bg-black text-white text-sm"
+        >
           + Nueva categoría
         </button>
       </div>
@@ -61,6 +67,11 @@ export default function CategoriesPage() {
           </table>
         </div>
       )}
+      <CreateCategoryModal
+        open={open}
+        onClose={() => setOpen(false)}
+        onCreated={loadCategories}
+      />
     </div>
   );
 }
