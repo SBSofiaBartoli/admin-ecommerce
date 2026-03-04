@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 export async function apiClient<T>(
   endpoint: string,
@@ -15,6 +15,11 @@ export async function apiClient<T>(
       ...options.headers,
     },
   });
+
+  if (res.status === 401) {
+    localStorage.removeItem("access_token");
+    window.location.href = "/login";
+  }
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
