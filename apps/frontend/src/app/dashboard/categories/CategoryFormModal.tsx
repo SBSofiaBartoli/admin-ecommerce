@@ -39,16 +39,17 @@ export default function CategoryFormModal({
     setError("");
 
     try {
+      let result: Category;
+
       if (category) {
-        const updated = await updateCategory(category.id, {
+        result = await updateCategory(category.id, {
           name,
           description,
         });
-        onSuccess(updated);
       } else {
-        const created = await createCategory({ name, description });
-        onSuccess(created);
+        result = await createCategory({ name, description });
       }
+      onSuccess(result);
       onClose();
     } catch {
       setError("Error al guardar la categoría");

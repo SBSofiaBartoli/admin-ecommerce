@@ -19,6 +19,7 @@ export default function CategoriesPage() {
   const [deleting, setDeleting] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   async function loadCategories() {
     try {
@@ -97,11 +98,12 @@ export default function CategoriesPage() {
                     <Button
                       onClick={() => {
                         setSelectedCategory(cat);
+                        setEditingId(cat.id);
                         setModalOpen(true);
                       }}
-                      className="text-blue-600 hover:underline"
+                      disabled={editingId === cat.id}
                     >
-                      Editar
+                      {editingId === cat.id ? "Editando..." : "Editar"}
                     </Button>
                     {/* ELIMINAR */}
                     <Button
@@ -126,12 +128,14 @@ export default function CategoriesPage() {
         key={selectedCategory?.id ?? "new"}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={(updatedCategory) => {
-          setCategories((prev) =>
-            prev.map((c) =>
-              c.id === updatedCategory.id ? updatedCategory : c,
-            ),
-          );
+        onSuccess={(category) => {
+          setCategories((prev) => {
+            const exists = prev.some((c) => c.id === category.id);
+            if (exists) {
+              return prev.map((c) => (c.id === category.id ? category : c));
+            }
+            return [category, ...prev];
+          });
           setModalOpen(false);
           setSelectedCategory(undefined);
         }}
