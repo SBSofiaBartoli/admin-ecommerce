@@ -126,7 +126,15 @@ export default function CategoriesPage() {
         key={selectedCategory?.id ?? "new"}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={loadCategories}
+        onSuccess={(updatedCategory) => {
+          setCategories((prev) =>
+            prev.map((c) =>
+              c.id === updatedCategory.id ? updatedCategory : c,
+            ),
+          );
+          setModalOpen(false);
+          setSelectedCategory(undefined);
+        }}
         category={selectedCategory}
       />
       <ConfirmDialog

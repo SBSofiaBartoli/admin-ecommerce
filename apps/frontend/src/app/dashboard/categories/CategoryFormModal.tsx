@@ -18,7 +18,7 @@ import { Category } from "@/src/types/category";
 interface CategoryFormModalProps {
   open: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (category: Category) => void;
   category?: Category;
 }
 
@@ -40,11 +40,15 @@ export default function CategoryFormModal({
 
     try {
       if (category) {
-        await updateCategory(category.id, { name, description });
+        const updated = await updateCategory(category.id, {
+          name,
+          description,
+        });
+        onSuccess(updated);
       } else {
-        await createCategory({ name, description });
+        const created = await createCategory({ name, description });
+        onSuccess(created);
       }
-      onSuccess();
       onClose();
     } catch {
       setError("Error al guardar la categoría");
