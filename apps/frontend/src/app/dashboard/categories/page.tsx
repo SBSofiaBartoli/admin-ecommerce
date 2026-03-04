@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCategories } from "../../../api/categories";
+import { deleteCategory, getCategories } from "../../../api/categories";
 import type { Category } from "../../../types/category";
-import CreateCategoryModal from "./CreateCategoryModal";
+import CategoryFormModal from "./CategoryFormModal";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | undefined
+  >();
 
   async function loadCategories() {
     try {
@@ -27,13 +30,30 @@ export default function CategoriesPage() {
     loadCategories();
   }, []);
 
+  async function handleDelete(id: string) {
+    const confirmed = window.confirm(
+      "¿Estás seguro que querés eliminar esta categoría?",
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteCategory(id);
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+    } catch {
+      alert("Error al eliminar la categoría");
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header simple (sin abstraer aún) */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Categorías</h1>
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setSelectedCategory(undefined);
+            setModalOpen(true);
+          }}
           className="px-4 py-2 rounded-md bg-black text-white text-sm"
         >
           + Nueva categoría
@@ -42,9 +62,7 @@ export default function CategoriesPage() {
 
       {/* Estados */}
       {loading && <div className="text-gray-500">Cargando categorías...</div>}
-
       {error && <div className="text-red-500 text-sm">{error}</div>}
-
       {!loading && !error && (
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
@@ -61,16 +79,38 @@ export default function CategoriesPage() {
                   <td className="px-4 py-2 text-gray-500">
                     {cat.description ?? "-"}
                   </td>
+                  {/* COLUMNA DE ACCIONES */}
+                  <td>
+                    {/* EDITAR */}
+                    <button
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        setModalOpen(true);
+                      }}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Editar
+                    </button>
+                    {/* ELIMINAR */}
+                    <button
+                      onClick={() => handleDelete(cat.id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-      <CreateCategoryModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onCreated={loadCategories}
+      <CategoryFormModal
+        key={selectedCategory?.id ?? "new"}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={loadCategories}
+        category={selectedCategory}
       />
     </div>
   );
