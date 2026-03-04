@@ -52,6 +52,8 @@ export default function CategoryFormModal({
       onClose();
     } catch {
       setError("Error al guardar la categoría");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -100,7 +102,9 @@ export default function CategoryFormModal({
             </Button>
             <Button type="submit" disabled={loading}>
               {loading
-                ? "Guardando..."
+                ? category
+                  ? "Guardando..."
+                  : "Creando..."
                 : category
                   ? "Guardar cambios"
                   : "Crear"}
