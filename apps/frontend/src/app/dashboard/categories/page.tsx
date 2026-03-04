@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { deleteCategory, getCategories } from "../../../api/categories";
 import type { Category } from "../../../types/category";
 import CategoryFormModal from "./CategoryFormModal";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import { Button } from "@/components/ui/button";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -13,6 +15,9 @@ export default function CategoriesPage() {
   const [selectedCategory, setSelectedCategory] = useState<
     Category | undefined
   >();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   async function loadCategories() {
     try {
@@ -30,17 +35,20 @@ export default function CategoriesPage() {
     loadCategories();
   }, []);
 
-  async function handleDelete(id: string) {
-    const confirmed = window.confirm(
-      "¿Estás seguro que querés eliminar esta categoría?",
-    );
-    if (!confirmed) return;
+  async function handleDelete() {
+    if (!deleteId) return;
 
     try {
-      await deleteCategory(id);
-      setCategories((prev) => prev.filter((c) => c.id !== id));
-    } catch {
+      setDeleting(true);
+      await deleteCategory(deleteId);
+      setCategories((prev) => prev.filter((c) => c.id !== deleteId));
+    } catch (error) {
+      console.error(error);
       alert("Error al eliminar la categoría");
+    } finally {
+      setDeleting(false);
+      setIsConfirmOpen(false);
+      setDeleteId(null);
     }
   }
 
@@ -49,7 +57,7 @@ export default function CategoriesPage() {
       {/* Header simple (sin abstraer aún) */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Categorías</h1>
-        <button
+        <Button
           onClick={() => {
             setSelectedCategory(undefined);
             setModalOpen(true);
@@ -57,7 +65,7 @@ export default function CategoriesPage() {
           className="px-4 py-2 rounded-md bg-black text-white text-sm"
         >
           + Nueva categoría
-        </button>
+        </Button>
       </div>
 
       {/* Estados */}
@@ -82,7 +90,7 @@ export default function CategoriesPage() {
                   {/* COLUMNA DE ACCIONES */}
                   <td>
                     {/* EDITAR */}
-                    <button
+                    <Button
                       onClick={() => {
                         setSelectedCategory(cat);
                         setModalOpen(true);
@@ -90,14 +98,18 @@ export default function CategoriesPage() {
                       className="text-blue-600 hover:underline"
                     >
                       Editar
-                    </button>
+                    </Button>
                     {/* ELIMINAR */}
-                    <button
-                      onClick={() => handleDelete(cat.id)}
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        setDeleteId(cat.id);
+                        setIsConfirmOpen(true);
+                      }}
                       className="text-red-600 hover:underline"
                     >
                       Eliminar
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -111,6 +123,19 @@ export default function CategoriesPage() {
         onClose={() => setModalOpen(false)}
         onSuccess={loadCategories}
         category={selectedCategory}
+      />
+      <ConfirmDialog
+        open={isConfirmOpen}
+        title="Eliminar categoría"
+        description="Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        loading={deleting}
+        onCancel={() => {
+          setIsConfirmOpen(false);
+          setDeleteId(null);
+        }}
+        onConfirm={handleDelete}
       />
     </div>
   );

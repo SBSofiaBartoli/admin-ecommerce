@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Category } from "@/src/types/category";
@@ -57,6 +58,9 @@ export default function CategoryFormModal({
           <DialogTitle>
             {category ? "Editar categoría" : "Nueva categoría"}
           </DialogTitle>
+          <DialogDescription>
+            Completá los datos de la categoría
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
