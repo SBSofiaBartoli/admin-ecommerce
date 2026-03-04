@@ -18,6 +18,7 @@ export default function CategoriesPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function loadCategories() {
     try {
@@ -40,6 +41,7 @@ export default function CategoriesPage() {
 
     try {
       setDeleting(true);
+      setDeletingId(deleteId);
       await deleteCategory(deleteId);
       setCategories((prev) => prev.filter((c) => c.id !== deleteId));
     } catch (error) {
@@ -47,8 +49,10 @@ export default function CategoriesPage() {
       alert("Error al eliminar la categoría");
     } finally {
       setDeleting(false);
+      setDeletingId(null);
       setIsConfirmOpen(false);
       setDeleteId(null);
+      setSelectedCategory(undefined);
     }
   }
 
@@ -102,13 +106,14 @@ export default function CategoriesPage() {
                     {/* ELIMINAR */}
                     <Button
                       variant="destructive"
+                      disabled={deletingId === cat.id}
                       onClick={() => {
+                        setSelectedCategory(cat);
                         setDeleteId(cat.id);
                         setIsConfirmOpen(true);
                       }}
-                      className="text-red-600 hover:underline"
                     >
-                      Eliminar
+                      {deletingId === cat.id ? "Eliminando..." : "Eliminar"}
                     </Button>
                   </td>
                 </tr>
@@ -127,13 +132,14 @@ export default function CategoriesPage() {
       <ConfirmDialog
         open={isConfirmOpen}
         title="Eliminar categoría"
-        description="Esta acción no se puede deshacer."
+        description={`¿Estás seguro que querés eliminar "${selectedCategory?.name}"? Esta acción no se puede deshacer.`}
         confirmText="Eliminar"
         cancelText="Cancelar"
         loading={deleting}
         onCancel={() => {
           setIsConfirmOpen(false);
           setDeleteId(null);
+          setSelectedCategory(undefined);
         }}
         onConfirm={handleDelete}
       />
