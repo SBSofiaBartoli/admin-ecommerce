@@ -11,7 +11,12 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+    allowedHeaders: ['authorization', 'content-type'],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 
