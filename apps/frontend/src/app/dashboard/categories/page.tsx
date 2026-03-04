@@ -39,14 +39,16 @@ export default function CategoriesPage() {
 
   async function handleDelete() {
     if (!deleteId) return;
+    const prevCategories = categories;
+
+    setCategories((prev) => prev.filter((c) => c.id !== deleteId));
+    setDeletingId(deleteId);
+    setDeleting(true);
 
     try {
-      setDeleting(true);
-      setDeletingId(deleteId);
       await deleteCategory(deleteId);
-      setCategories((prev) => prev.filter((c) => c.id !== deleteId));
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setCategories(prevCategories);
       alert("Error al eliminar la categoría");
     } finally {
       setDeleting(false);
