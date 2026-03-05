@@ -1,4 +1,10 @@
-import { IsString, IsOptional, MinLength, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  MinLength,
+  IsInt,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateCategoryDto {
   @IsString()
@@ -12,4 +18,8 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsInt()
   position?: number;
+
+  @IsOptional()
+  @IsUUID()
+  parentId?: string;
 }
