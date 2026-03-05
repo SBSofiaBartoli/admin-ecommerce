@@ -29,15 +29,13 @@ export default function CategoryFormModal({
   category,
 }: CategoryFormModalProps) {
   const [name, setName] = useState(category?.name ?? "");
-  const [position, setPosition] = useState(
-    category?.position?.toString() ?? "",
-  );
   const [parentId, setParentId] = useState(category?.parentId ?? "");
   const [parentOptions, setParentOptions] = useState<
-    Pick<Category, "id" | "name">[]
+    Pick<Category, "id" | "name" | "position">[]
   >([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const selectedParent = parentOptions.find((p) => p.id === parentId);
 
   useEffect(() => {
     async function loadParents() {
@@ -51,7 +49,6 @@ export default function CategoryFormModal({
     }
     if (open) {
       setName(category?.name ?? "");
-      setPosition(category?.position?.toString() ?? "");
       setParentId(category?.parentId ?? "");
       void loadParents();
     }
@@ -65,16 +62,27 @@ export default function CategoryFormModal({
     try {
       const data = {
         name,
-        position: position !== "" ? parseInt(position) : undefined,
         parentId: parentId || undefined,
+        position: selectedParent?.position ?? 0,
       };
       const result = category
         ? await updateCategory(category.id, data)
         : await createCategory(data);
       onSuccess(result);
       onClose();
-    } catch {
-      setError("Error al guardar la categoría");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      if (
+        message.includes(
+          "A category with that name already exists in this parent category",
+        )
+      ) {
+        setError(
+          "Ya existe una categoría con ese nombre en esta categoría padre",
+        );
+      } else {
+        setError("Error al guardar la categoría");
+      }
     } finally {
       setLoading(false);
     }
@@ -124,9 +132,11 @@ export default function CategoryFormModal({
             <Input
               id="position"
               type="number"
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-              placeholder="1"
+              value={
+                parentOptions.find((p) => p.id === parentId)?.position ?? 0
+              }
+              disabled
+              className="bg-gray-50 cursor-not-allowed"
             />
           </div>
 

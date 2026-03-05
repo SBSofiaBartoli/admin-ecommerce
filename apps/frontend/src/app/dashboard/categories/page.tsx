@@ -128,7 +128,9 @@ export default function CategoriesPage() {
                 >
                   {/* Posición */}
                   <td className="px-4 py-3 text-center text-muted-foreground">
-                    {cat.position ?? "—"}
+                    {cat.position !== null && cat.position !== undefined
+                      ? cat.position
+                      : "—"}
                   </td>
 
                   {/* Nombre */}
