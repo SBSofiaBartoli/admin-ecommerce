@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { SaleStatus } from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)
 @Controller('sales')
@@ -26,7 +27,7 @@ export class SalesController {
   }
 
   @Put(':id/status')
-  updateStatus(@Param('id') id: string, @Body('status') status: string) {
+  updateStatus(@Param('id') id: string, @Body('status') status: SaleStatus) {
     return this.salesService.updateStatus(id, status);
   }
 }

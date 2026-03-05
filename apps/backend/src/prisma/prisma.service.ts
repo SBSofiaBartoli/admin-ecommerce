@@ -10,7 +10,7 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     const adapter = new PrismaPg({
       connectionString: process.env.DATABASE_URL as string,
     });
-    this.client = new PrismaClient({ adapter } as any);
+    this.client = new PrismaClient({ adapter });
   }
 
   get category() {
@@ -31,10 +31,10 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit() {
-    await (this.client as any).$connect();
+    await this.client.$connect();
   }
 
   async onModuleDestroy() {
-    await (this.client as any).$disconnect();
+    await this.client.$disconnect();
   }
 }

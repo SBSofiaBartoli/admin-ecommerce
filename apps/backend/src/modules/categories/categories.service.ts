@@ -12,7 +12,7 @@ export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    return (this.prisma.category as any).findMany({
+    return this.prisma.category.findMany({
       where: { parentId: { not: null } },
       orderBy: { position: 'asc' },
       include: {
@@ -35,7 +35,7 @@ export class CategoriesService {
   }
 
   async findOne(id: string) {
-    const category = await (this.prisma.category as any).findUnique({
+    const category = await this.prisma.category.findUnique({
       where: { id },
     });
     if (!category) throw new NotFoundException(`Category #${id} not found`);
@@ -51,7 +51,7 @@ export class CategoriesService {
         throw new BadRequestException('Parent category not found');
       }
     }
-    const existing = await (this.prisma.category as any).findFirst({
+    const existing = await this.prisma.category.findFirst({
       where: {
         name: dto.name,
         parentId: dto.parentId ?? null,
@@ -76,7 +76,7 @@ export class CategoriesService {
       }
     }
     if (dto.name) {
-      const existing = await (this.prisma.category as any).findFirst({
+      const existing = await this.prisma.category.findFirst({
         where: {
           name: dto.name,
           parentId: dto.parentId ?? null,
@@ -89,11 +89,11 @@ export class CategoriesService {
         );
       }
     }
-    return (this.prisma.category as any).update({ where: { id }, data: dto });
+    return this.prisma.category.update({ where: { id }, data: dto });
   }
 
   async remove(id: string) {
     await this.findOne(id);
-    return (this.prisma.category as any).delete({ where: { id } });
+    return this.prisma.category.delete({ where: { id } });
   }
 }

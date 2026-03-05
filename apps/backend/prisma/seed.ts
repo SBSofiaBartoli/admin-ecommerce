@@ -11,7 +11,7 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const hashedPassword = await bcrypt.hash('admin123', 10);
-  await (prisma.user as any).upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@admin.com' },
     update: {},
     create: {
@@ -33,7 +33,7 @@ async function main() {
   ];
 
   for (const name of parentCategories) {
-    await (prisma.category as any).upsert({
+    await prisma.category.upsert({
       where: { name: name.name },
       update: { position: name.position },
       create: {
@@ -49,4 +49,4 @@ async function main() {
 
 main()
   .catch(console.error)
-  .finally(() => (prisma as any).$disconnect());
+  .finally(() => prisma.$disconnect());
