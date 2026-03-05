@@ -20,7 +20,31 @@ async function main() {
       password: hashedPassword,
     },
   });
-  console.log('Seed completed: admin@admin.com / admin123');
+
+  const parentCategories = [
+    { name: 'Principal', position: 0 },
+    { name: 'Hombre', position: 1 },
+    { name: 'Mujer', position: 2 },
+    { name: 'Niño', position: 3 },
+    { name: 'Mascota', position: 4 },
+    { name: 'Electrónica', position: 5 },
+    { name: 'Hogar', position: 6 },
+    { name: 'Jardín', position: 7 },
+  ];
+
+  for (const name of parentCategories) {
+    await (prisma.category as any).upsert({
+      where: { name: name.name },
+      update: { position: name.position },
+      create: {
+        id: randomUUID(),
+        name: name.name,
+        position: name.position,
+      },
+    });
+  }
+
+  console.log('Seed completed');
 }
 
 main()

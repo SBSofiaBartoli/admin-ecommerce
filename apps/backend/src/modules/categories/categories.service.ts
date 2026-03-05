@@ -13,23 +13,23 @@ export class CategoriesService {
 
   async findAll() {
     return (this.prisma.category as any).findMany({
-      where: { parentId: null },
+      where: { parentId: { not: null } },
       orderBy: { position: 'asc' },
       include: {
-        children: {
-          orderBy: { position: 'asc' },
-        },
+        children: true,
+        parent: true,
       },
     });
   }
 
   async findForSelect() {
     return this.prisma.category.findMany({
+      where: { parentId: null },
       orderBy: { name: 'asc' },
       select: {
         id: true,
         name: true,
-        parentId: true,
+        position: true,
       },
     });
   }
@@ -51,6 +51,17 @@ export class CategoriesService {
         throw new BadRequestException('Parent category not found');
       }
     }
+    const existing = await (this.prisma.category as any).findFirst({
+      where: {
+        name: dto.name,
+        parentId: dto.parentId ?? null,
+      },
+    });
+    if (existing) {
+      throw new BadRequestException(
+        'A category with that name already exists in this parent category',
+      );
+    }
     return this.prisma.category.create({ data: dto });
   }
 
@@ -62,6 +73,20 @@ export class CategoriesService {
       });
       if (!parent) {
         throw new BadRequestException('Parent category not found');
+      }
+    }
+    if (dto.name) {
+      const existing = await (this.prisma.category as any).findFirst({
+        where: {
+          name: dto.name,
+          parentId: dto.parentId ?? null,
+          NOT: { id },
+        },
+      });
+      if (existing) {
+        throw new BadRequestException(
+          'A category with that name already exists in this parent category',
+        );
       }
     }
     return (this.prisma.category as any).update({ where: { id }, data: dto });

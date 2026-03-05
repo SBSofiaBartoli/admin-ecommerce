@@ -20,7 +20,7 @@ enum PaymentStatus {
 
 model Category {
   id       String @id @default(uuid())
-  name     String @unique
+  name     String
   position Int?
 
   parentId String?
