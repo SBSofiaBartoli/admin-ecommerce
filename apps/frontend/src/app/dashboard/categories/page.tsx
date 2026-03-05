@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteCategory, getCategories } from "../../../api/categories";
-import type { Category } from "../../../types/category";
 import CategoryFormModal from "./CategoryFormModal";
-import ConfirmDialog from "../../../components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import { Category } from "@/types";
+import { deleteCategory, getCategories } from "@/api";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -19,7 +19,8 @@ export default function CategoriesPage() {
   const [deleting, setDeleting] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   async function loadCategories() {
     try {
@@ -59,71 +60,137 @@ export default function CategoriesPage() {
     }
   }
 
+  const filteredCategories = categories.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <div className="space-y-6">
-      {/* Header simple (sin abstraer aún) */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Categorías</h1>
-        <Button
-          onClick={() => {
-            setSelectedCategory(undefined);
-            setModalOpen(true);
-          }}
-          className="px-4 py-2 rounded-md bg-black text-white text-sm"
-        >
-          + Nueva categoría
-        </Button>
+      {/* Header */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Categorías</h1>
+          </div>
+
+          <Button
+            onClick={() => {
+              setSelectedCategory(undefined);
+              setModalOpen(true);
+            }}
+            className="px-4 py-2 rounded-md bg-black text-white text-sm"
+          >
+            + Nueva categoría
+          </Button>
+        </div>
+
+        {/* Buscador */}
+        <div className="max-w-sm">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por nombre..."
+            className="w-full rounded-md border px-3 py-2 text-sm"
+          />
+        </div>
       </div>
 
-      {/* Estados */}
+      {/* TABLA */}
       {loading && <div className="text-gray-500">Cargando categorías...</div>}
       {error && <div className="text-red-500 text-sm">{error}</div>}
       {!loading && !error && (
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left px-4 py-2">Nombre</th>
-                <th className="text-left px-4 py-2">Descripción</th>
+              <tr className="border-b bg-muted/50 text-sm">
+                <th className="px-4 py-3 cursor-pointer">Posición</th>
+                <th className="px-4 py-3 cursor-pointer">Nombre</th>
+                <th className="px-4 py-3">Subcategorías</th>
+                <th className="px-4 py-3 cursor-pointer">Categoría padre</th>
+                <th className="px-4 py-3 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {categories.map((cat) => (
-                <tr key={cat.id} className="border-t">
-                  <td className="px-4 py-2 font-medium">{cat.name}</td>
-                  <td className="px-4 py-2 text-gray-500">
-                    {cat.description ?? "-"}
+              {filteredCategories.map((cat, index) => (
+                <tr
+                  key={cat.id}
+                  className="border-b last:border-0 hover:bg-muted/50"
+                >
+                  {/* Posición */}
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {index + 1}
                   </td>
-                  {/* COLUMNA DE ACCIONES */}
-                  <td>
-                    {/* EDITAR */}
-                    <Button
-                      onClick={() => {
-                        setSelectedCategory(cat);
-                        setEditingId(cat.id);
-                        setModalOpen(true);
-                      }}
-                      disabled={editingId === cat.id}
-                    >
-                      {editingId === cat.id ? "Editando..." : "Editar"}
-                    </Button>
-                    {/* ELIMINAR */}
-                    <Button
-                      variant="destructive"
-                      disabled={deletingId === cat.id}
-                      onClick={() => {
-                        setSelectedCategory(cat);
-                        setDeleteId(cat.id);
-                        setIsConfirmOpen(true);
-                      }}
-                    >
-                      {deletingId === cat.id ? "Eliminando..." : "Eliminar"}
-                    </Button>
+
+                  {/* Nombre */}
+                  <td className="px-4 py-3 font-medium">{cat.name}</td>
+
+                  {/* Subcategorías */}
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {cat.children?.length ?? 0}
+                  </td>
+
+                  {/* Categoría padre */}
+                  <td className="px-4 py-3 text-sm">
+                    {cat.parent?.name ?? "—"}
+                  </td>
+
+                  {/* Acciones */}
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="icon">
+                        👁
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setModalOpen(true);
+                        }}
+                      >
+                        ✏️
+                      </Button>
+
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        disabled={deletingId === cat.id}
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setDeleteId(cat.id);
+                          setIsConfirmOpen(true);
+                        }}
+                      >
+                        🗑
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <div className="flex items-center justify-between px-4 py-3 text-sm">
+            <span className="text-muted-foreground">Página {page}</span>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Siguiente
+              </Button>
+            </div>
+          </div>
         </div>
       )}
       <CategoryFormModal

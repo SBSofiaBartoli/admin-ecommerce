@@ -1,8 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useAuthGuard } from "../../hooks/useAuthGuard";
 import Sidebar from "@/components/layout/Sidebar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   useAuthGuard();
