@@ -1,5 +1,5 @@
+import { AuthResponse } from "@/types";
 import { apiClient } from "./client";
-import { AuthResponse } from "../types/auth";
 
 interface LoginInput {
   email: string;
