@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "../../../api/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { login } from "@/api";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();

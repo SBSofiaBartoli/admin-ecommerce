@@ -9,8 +9,8 @@ import {
   ShoppingCart,
   LogOut,
 } from "lucide-react";
-import { logout } from "../../src/api/auth";
 import { useRouter } from "next/navigation";
+import { logout } from "@/api";
 
 const navItems = [
   { href: "/dashboard/categories", label: "Categorías", icon: Tag },
