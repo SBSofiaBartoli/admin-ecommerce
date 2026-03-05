@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateSaleDto } from './dto/create-sale.dto';
 
 @Injectable()
 export class SalesService {
@@ -9,77 +8,42 @@ export class SalesService {
   async findAll() {
     return this.prisma.sale.findMany({
       include: {
+        customer: true,
         items: {
           include: {
             variant: {
-              include: {
-                product: true,
-                values: {
-                  include: {
-                    option: true,
-                    value: true,
-                  },
-                },
-              },
+              include: { product: true },
             },
           },
         },
-        customer: true,
+        history: true,
+        shipment: true,
       },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async create(dto: CreateSaleDto) {
-    const variants = await this.prisma.productVariant.findMany({
-      where: { id: { in: dto.items.map((i) => i.variantId) } },
-    });
-    if (variants.length !== dto.items.length) {
-      throw new NotFoundException('Variant not found');
-    }
-
-    const items = dto.items.map((item) => {
-      const variant = variants.find((v) => v.id === item.variantId);
-      if (!variant) throw new NotFoundException('Variant not found');
-      return {
-        variantId: variant.id,
-        quantity: item.quantity,
-        price: variant.price,
-      };
-    });
-
-    const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  async create() {
     return this.prisma.sale.create({
       data: {
         orderNumber: `ORD-${Date.now()}`,
-        status: 'COMPLETED',
+        status: 'PREPARATION',
         paymentStatus: 'PAID',
-        total,
+        total: 0,
         customer: {
-          connect: { id: dto.customerId },
-        },
-        items: {
-          create: items.map((item) => ({
-            variant: {
-              connect: { id: item.variantId },
-            },
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        },
-      },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: {
-                product: true,
-              },
-            },
+          create: {
+            name: 'Cliente Demo',
+            email: `demo-${Date.now()}@demo.com`,
           },
         },
-        customer: true,
       },
+    });
+  }
+
+  async updateStatus(id: string, status: string) {
+    return (this.prisma.sale as any).update({
+      where: { id },
+      data: { status },
     });
   }
 }
