@@ -99,44 +99,64 @@ export default function CategoriesPage() {
       {loading && <div className="text-gray-500">Cargando categorías...</div>}
       {error && <div className="text-red-500 text-sm">{error}</div>}
       {!loading && !error && (
-        <div className="border rounded-lg overflow-hidden">
+        <div className="border rounded-lg overflow-hidden bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="border-b bg-muted/50 text-sm">
-                <th className="px-4 py-3 cursor-pointer">Posición</th>
-                <th className="px-4 py-3 cursor-pointer">Nombre</th>
-                <th className="px-4 py-3">Subcategorías</th>
-                <th className="px-4 py-3 cursor-pointer">Categoría padre</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="px-4 py-3 text-center font-medium w-28">
+                  Posición
+                </th>
+                <th className="px-4 py-3 text-center font-medium w-48">
+                  Nombre
+                </th>
+                <th className="px-4 py-3 text-center font-medium w-30">
+                  Subcategorías
+                </th>
+                <th className="px-4 py-3 text-center font-medium w-40">
+                  Categoría padre
+                </th>
+                <th className="px-4 py-3 text-center font-medium w-32">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredCategories.map((cat, index) => (
+              {filteredCategories.map((cat) => (
                 <tr
                   key={cat.id}
                   className="border-b last:border-0 hover:bg-muted/50"
                 >
                   {/* Posición */}
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {index + 1}
+                  <td className="px-4 py-3 text-center text-muted-foreground">
+                    {cat.position ?? "—"}
                   </td>
 
                   {/* Nombre */}
-                  <td className="px-4 py-3 font-medium">{cat.name}</td>
+                  <td className="px-4 py-3 text-center font-medium w-48">
+                    {cat.name}
+                  </td>
 
                   {/* Subcategorías */}
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                  <td className="px-4 py-3 text-center text-muted-foreground w-30">
                     {cat.children?.length ?? 0}
                   </td>
 
                   {/* Categoría padre */}
-                  <td className="px-4 py-3 text-sm">
-                    {cat.parent?.name ?? "—"}
+                  <td className="px-4 py-3 text-center">
+                    {cat.parent ? (
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                        {cat.parent.name}
+                      </span>
+                    ) : (
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                        Principal
+                      </span>
+                    )}
                   </td>
 
                   {/* Acciones */}
                   <td className="px-4 py-3">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       <Button variant="ghost" size="icon">
                         👁
                       </Button>
@@ -170,7 +190,7 @@ export default function CategoriesPage() {
               ))}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm">
+          <div className="flex items-center justify-between px-4 py-3 text-sm border-t">
             <span className="text-muted-foreground">Página {page}</span>
 
             <div className="flex gap-2">
@@ -197,14 +217,8 @@ export default function CategoriesPage() {
         key={selectedCategory?.id ?? "new"}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={(category) => {
-          setCategories((prev) => {
-            const exists = prev.some((c) => c.id === category.id);
-            if (exists) {
-              return prev.map((c) => (c.id === category.id ? category : c));
-            }
-            return [category, ...prev];
-          });
+        onSuccess={() => {
+          void loadCategories();
           setModalOpen(false);
           setSelectedCategory(undefined);
         }}
