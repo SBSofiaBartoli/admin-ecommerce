@@ -13,11 +13,12 @@ export class CategoriesService {
 
   async findAll() {
     return this.prisma.category.findMany({
-      where: { parentId: { not: null } },
       orderBy: { position: 'asc' },
       include: {
-        children: true,
         parent: true,
+        _count: {
+          select: { children: true },
+        },
       },
     });
   }
@@ -40,6 +41,13 @@ export class CategoriesService {
     });
     if (!category) throw new NotFoundException(`Category #${id} not found`);
     return category;
+  }
+
+  async findChildren(parentId: string) {
+    return (this.prisma.category as any).findMany({
+      where: { parentId },
+      orderBy: { position: 'asc' },
+    });
   }
 
   async create(dto: CreateCategoryDto) {

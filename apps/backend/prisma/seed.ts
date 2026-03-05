@@ -32,18 +32,20 @@ async function main() {
     { name: 'Jardín', position: 7 },
   ];
 
-  for (const name of parentCategories) {
-    await prisma.category.upsert({
-      where: { name: name.name },
-      update: { position: name.position },
-      create: {
-        id: randomUUID(),
-        name: name.name,
-        position: name.position,
-      },
+  for (const cat of parentCategories) {
+    const existing = await (prisma.category as any).findFirst({
+      where: { name: cat.name, parentId: null },
     });
+    if (!existing) {
+      await (prisma.category as any).create({
+        data: {
+          id: randomUUID(),
+          name: cat.name,
+          position: cat.position,
+        },
+      });
+    }
   }
-
   console.log('Seed completed');
 }
 

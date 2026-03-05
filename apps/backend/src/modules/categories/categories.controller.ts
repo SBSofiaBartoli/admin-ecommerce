@@ -34,6 +34,11 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
+  @Get(':id/children')
+  findChildren(@Param('id', ParseUUIDPipe) id: string) {
+    return this.categoriesService.findChildren(id);
+  }
+
   @Post()
   create(@Body() dto: CreateCategoryDto) {
     return this.categoriesService.create(dto);
