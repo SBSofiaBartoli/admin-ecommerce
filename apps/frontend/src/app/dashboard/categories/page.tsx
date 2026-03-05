@@ -5,8 +5,9 @@ import CategoryFormModal from "./CategoryFormModal";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import { Category } from "@/types";
-import { deleteCategory, getCategories } from "@/api";
+import { deleteCategory, getCategories, getCategoryChildren } from "@/api";
 import { Eye, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -25,6 +26,9 @@ export default function CategoriesPage() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [childrenMap, setChildrenMap] = useState<Record<string, Category[]>>(
+    {},
+  );
 
   async function loadCategories() {
     try {
@@ -84,10 +88,20 @@ export default function CategoriesPage() {
   );
   const totalPages = Math.ceil(sortedCategories.length / pageSize);
 
-  function toggleExpand(id: string) {
-    setExpanded((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    );
+  async function toggleExpand(id: string) {
+    if (expanded.includes(id)) {
+      setExpanded((prev) => prev.filter((i) => i !== id));
+    } else {
+      if (!childrenMap[id]) {
+        try {
+          const children = await getCategoryChildren(id);
+          setChildrenMap((prev) => ({ ...prev, [id]: children }));
+        } catch {
+          toast.error("Error al cargar subcategorías");
+        }
+      }
+      setExpanded((prev) => [...prev, id]);
+    }
   }
 
   return (
@@ -96,7 +110,7 @@ export default function CategoriesPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Categorías</h1>
+            <h1 className="text-4xl font-bold">Categorías</h1>
           </div>
 
           <Button
@@ -130,7 +144,7 @@ export default function CategoriesPage() {
             <thead>
               <tr className="border-b bg-muted/50">
                 <th
-                  className="px-4 py-3 text-center font-medium w-28"
+                  className="px-4 py-3 text-center font-semibold text-base w-28"
                   onClick={() => {
                     setSortField("position");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -139,7 +153,7 @@ export default function CategoriesPage() {
                   Posición
                 </th>
                 <th
-                  className="px-4 py-3 text-center font-medium w-48"
+                  className="px-4 py-3 text-center font-semibold text-base w-48"
                   onClick={() => {
                     setSortField("name");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -148,7 +162,7 @@ export default function CategoriesPage() {
                   Nombre
                 </th>
                 <th
-                  className="px-4 py-3 text-center font-medium w-30"
+                  className="px-4 py-3 text-center font-semibold text-base w-30"
                   onClick={() => {
                     setSortField("name");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -157,7 +171,7 @@ export default function CategoriesPage() {
                   Subcategorías
                 </th>
                 <th
-                  className="px-4 py-3 text-center font-medium w-40"
+                  className="px-4 py-3 text-center font-semibold text-base w-40"
                   onClick={() => {
                     setSortField("name");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -165,7 +179,7 @@ export default function CategoriesPage() {
                 >
                   Categoría padre
                 </th>
-                <th className="px-4 py-3 text-center font-medium w-32">
+                <th className="px-4 py-3 text-center font-semibold text-base w-32">
                   Acciones
                 </th>
               </tr>
@@ -202,26 +216,26 @@ export default function CategoriesPage() {
                       {/* Subcategorías */}
                       <td className="px-4 py-3 text-center text-muted-foreground w-30">
                         <div className="flex items-center gap-2 justify-center">
-                          {(cat.children?.length ?? 0) > 0 && (
+                          {(cat._count?.children ?? 0) > 0 && (
                             <button
                               onClick={() => toggleExpand(cat.id)}
-                              className="text-xs"
+                              className="text-xs cursor-pointer"
                             >
                               {expanded.includes(cat.id) ? "▼" : "▶"}
                             </button>
                           )}
-                          {cat.children?.length ?? 0}
+                          {cat._count?.children ?? 0} subcategorías
                         </div>
                       </td>
 
                       {/* Categoría padre */}
                       <td className="px-4 py-3 text-center">
                         {cat.parent ? (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                             {cat.parent.name}
                           </span>
                         ) : (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                             Principal
                           </span>
                         )}
@@ -261,10 +275,12 @@ export default function CategoriesPage() {
                       </td>
                     </tr>
                     {expanded.includes(cat.id) &&
-                      cat.children?.map((child) => (
+                      (childrenMap[cat.id] ?? []).map((child) => (
                         <tr key={child.id} className="bg-gray-50 border-b">
-                          <td></td>
-                          <td className="px-4 py-2 text-sm text-gray-600 pl-10">
+                          <td className="px-4 py-3 text-center text-muted-foreground text-xs">
+                            {child.position ?? "—"}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-600 pl-12 font-medium">
                             └ {child.name}
                           </td>
                           <td className="text-center text-xs text-muted-foreground">

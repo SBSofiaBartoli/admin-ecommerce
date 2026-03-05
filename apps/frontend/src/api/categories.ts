@@ -17,6 +17,10 @@ export async function getCategory(id: string): Promise<Category> {
   return apiClient<Category>(`/categories/${id}`);
 }
 
+export async function getCategoryChildren(id: string): Promise<Category[]> {
+  return apiClient<Category[]>(`/categories/${id}/children`);
+}
+
 export async function createCategory(data: {
   name: string;
   position?: number;

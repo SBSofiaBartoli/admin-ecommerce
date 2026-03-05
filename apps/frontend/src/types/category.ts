@@ -5,6 +5,9 @@ export interface Category {
   parentId?: string;
   parent?: Category;
   children?: Category[];
+  _count?: {
+    children: number;
+  };
   createdAt: string;
   updatedAt: string;
 }
