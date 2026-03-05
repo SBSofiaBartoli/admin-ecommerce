@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import { Category } from "@/types";
 import { deleteCategory, getCategories } from "@/api";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -160,7 +161,7 @@ export default function CategoriesPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-2">
                       <Button variant="ghost" size="icon">
-                        👁
+                        <Eye className="h-4 w-4" />
                       </Button>
 
                       <Button
@@ -171,7 +172,7 @@ export default function CategoriesPage() {
                           setModalOpen(true);
                         }}
                       >
-                        ✏️
+                        <Pencil className="h-4 w-4" />
                       </Button>
 
                       <Button
@@ -184,7 +185,7 @@ export default function CategoriesPage() {
                           setIsConfirmOpen(true);
                         }}
                       >
-                        🗑
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </td>
