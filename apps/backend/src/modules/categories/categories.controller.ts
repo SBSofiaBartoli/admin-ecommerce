@@ -24,6 +24,11 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
+  @Get('select')
+  getForSelect() {
+    return this.categoriesService.findForSelect();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoriesService.findOne(id);

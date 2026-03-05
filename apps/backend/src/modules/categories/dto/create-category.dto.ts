@@ -12,10 +12,6 @@ export class CreateCategoryDto {
   name: string;
 
   @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
   @IsInt()
   position?: number;
 

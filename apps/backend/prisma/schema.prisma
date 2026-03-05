@@ -19,68 +19,68 @@ enum PaymentStatus {
 }
 
 model Category {
-  id          String       @id @default(uuid())
-  name        String    @unique
-  position    Int?
+  id       String @id @default(uuid())
+  name     String @unique
+  position Int?
 
-  parentId    String?
-  parent      Category? @relation("CategoryParent", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryParent")
+  parentId String?
+  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryParent")
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  products    Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Product {
-  id          String       @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
   brand       String?
   gender      String?
 
-  categoryId  String
-  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
 
-  images      ProductImage[]
-  options     ProductOption[]
-  variants    ProductVariant[]
+  images   ProductImage[]
+  options  ProductOption[]
+  variants ProductVariant[]
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProductImage {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   url       String
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
-}
-
-model ProductOption {
-  id        String   @id @default(uuid())
-  name      String
-  productId String
-
-  values    ProductOptionValue[]
-  variantValues VariantOptionValue[]
   product   Product @relation(fields: [productId], references: [id])
 }
 
-model ProductOptionValue {
-  id        String   @id @default(uuid())
-  value     String
-  optionId  String
+model ProductOption {
+  id        String @id @default(uuid())
+  name      String
+  productId String
 
-  option    ProductOption @relation(fields: [optionId], references: [id])
+  values        ProductOptionValue[]
+  variantValues VariantOptionValue[]
+  product       Product              @relation(fields: [productId], references: [id])
+}
+
+model ProductOptionValue {
+  id       String @id @default(uuid())
+  value    String
+  optionId String
+
+  option        ProductOption        @relation(fields: [optionId], references: [id])
   variantValues VariantOptionValue[]
 }
 
 model ProductVariant {
-  id        String   @id @default(uuid())
-  sku       String?
-  price     Float
-  stock     Int
+  id    String  @id @default(uuid())
+  sku   String?
+  price Float
+  stock Int
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
@@ -93,14 +93,14 @@ model ProductVariant {
 }
 
 model VariantOptionValue {
-  id        String   @id @default(uuid())
-  variantId String   
+  id        String @id @default(uuid())
+  variantId String
   optionId  String
   valueId   String
 
-  variant   ProductVariant     @relation(fields: [variantId], references: [id])
-  option    ProductOption      @relation(fields: [optionId], references: [id])
-  value     ProductOptionValue @relation(fields: [valueId], references: [id])
+  variant ProductVariant     @relation(fields: [variantId], references: [id])
+  option  ProductOption      @relation(fields: [optionId], references: [id])
+  value   ProductOptionValue @relation(fields: [valueId], references: [id])
 }
 
 model Customer {
@@ -112,57 +112,57 @@ model Customer {
 }
 
 model Sale {
-  id            String   @id @default(uuid())
-  orderNumber   String   @unique
+  id            String        @id @default(uuid())
+  orderNumber   String        @unique
   status        SaleStatus
   paymentStatus PaymentStatus
   paymentMethod String?
   total         Float
 
-  customerId    String
-  customer      Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
 
-  items         SaleItem[]
-  history       SaleHistory[]
-  shipment      Shipment?
+  items    SaleItem[]
+  history  SaleHistory[]
+  shipment Shipment?
 
-  createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model SaleItem {
-  id        String   @id @default(uuid())
-  saleId   String
-  variantId  String
-  quantity Int
-  price    Float
+  id        String @id @default(uuid())
+  saleId    String
+  variantId String
+  quantity  Int
+  price     Float
 
-  sale     Sale     @relation(fields: [saleId], references: [id])
-  variant    ProductVariant @relation(fields: [variantId], references: [id])
+  sale    Sale           @relation(fields: [saleId], references: [id])
+  variant ProductVariant @relation(fields: [variantId], references: [id])
 }
 
 model User {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
 }
 
 model Shipment {
-  id          String   @id @default(uuid())
-  carrier     String
-  tracking    String?
-  shippedAt   DateTime?
+  id        String    @id @default(uuid())
+  carrier   String
+  tracking  String?
+  shippedAt DateTime?
 
-  saleId      String @unique
-  sale      Sale    @relation(fields: [saleId], references: [id])
+  saleId String @unique
+  sale   Sale   @relation(fields: [saleId], references: [id])
 }
 
 model SaleHistory {
-  id        String   @id @default(uuid())
-  saleId   String
-  status   SaleStatus
-  note     String?
-  createdAt DateTime @default(now())
+  id        String     @id @default(uuid())
+  saleId    String
+  status    SaleStatus
+  note      String?
+  createdAt DateTime   @default(now())
 
-  sale     Sale     @relation(fields: [saleId], references: [id])
+  sale Sale @relation(fields: [saleId], references: [id])
 }
