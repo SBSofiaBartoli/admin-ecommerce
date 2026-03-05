@@ -1,8 +1,10 @@
-import { Product } from "./product";
+import { ProductVariant } from "./product-variant";
 
 export interface SaleItem {
   id: string;
-  productId: string;
+  saleId: string;
+  variantId: string;
   quantity: number;
-  product?: Product;
+  price: number;
+  variant?: ProductVariant;
 }
