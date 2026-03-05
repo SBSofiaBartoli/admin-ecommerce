@@ -26,6 +26,10 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     return this.client.user;
   }
 
+  get productVariant() {
+    return this.client.productVariant;
+  }
+
   async onModuleInit() {
     await (this.client as any).$connect();
   }

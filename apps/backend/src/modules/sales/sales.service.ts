@@ -11,41 +11,74 @@ export class SalesService {
       include: {
         items: {
           include: {
-            product: true,
+            variant: {
+              include: {
+                product: true,
+                values: {
+                  include: {
+                    option: true,
+                    value: true,
+                  },
+                },
+              },
+            },
           },
         },
+        customer: true,
       },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async create(dto: CreateSaleDto) {
-    const products = await this.prisma.product.findMany({
-      where: { id: { in: dto.items.map((i) => i.productId) } },
+    const variants = await this.prisma.productVariant.findMany({
+      where: { id: { in: dto.items.map((i) => i.variantId) } },
     });
+    if (variants.length !== dto.items.length) {
+      throw new NotFoundException('Variant not found');
+    }
 
     const items = dto.items.map((item) => {
-      const product = products.find((p) => p.id === item.productId);
-      if (!product) throw new NotFoundException();
+      const variant = variants.find((v) => v.id === item.variantId);
+      if (!variant) throw new NotFoundException('Variant not found');
       return {
-        productId: product.id,
+        variantId: variant.id,
         quantity: item.quantity,
-        price: product.price,
+        price: variant.price,
       };
     });
 
     const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
     return this.prisma.sale.create({
       data: {
+        orderNumber: `ORD-${Date.now()}`,
+        status: 'COMPLETED',
+        paymentStatus: 'PAID',
         total,
+        customer: {
+          connect: { id: dto.customerId },
+        },
         items: {
-          create: items,
+          create: items.map((item) => ({
+            variant: {
+              connect: { id: item.variantId },
+            },
+            quantity: item.quantity,
+            price: item.price,
+          })),
         },
       },
       include: {
         items: {
-          include: { product: true },
+          include: {
+            variant: {
+              include: {
+                product: true,
+              },
+            },
+          },
         },
+        customer: true,
       },
     });
   }
