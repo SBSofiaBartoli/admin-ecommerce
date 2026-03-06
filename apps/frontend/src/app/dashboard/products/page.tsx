@@ -14,6 +14,13 @@ import { useSearchParams } from "next/navigation";
 import SearchInput from "@/components/shared/SearchInput";
 import TablePagination from "@/components/shared/TablePagination";
 import StatusBadge from "@/components/shared/StatusBadge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -130,35 +137,43 @@ export default function ProductsPage() {
           width="w-72"
         />
         <div className="ml-auto flex items-center gap-2">
-          <select
-            value={filterCategory}
-            onChange={(e) => {
-              setFilterCategory(e.target.value);
+          <Select
+            value={filterCategory || "all"}
+            onValueChange={(v) => {
+              setFilterCategory(v === "all" ? "" : v);
               setPage(1);
             }}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
           >
-            <option value="">Todas las categorías</option>
-            {subcategories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <select
+            <SelectTrigger className="w-48 border-gray-200">
+              <SelectValue placeholder="Todas las categorías" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {subcategories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
             value={filterGender}
-            onChange={(e) => {
-              setFilterGender(e.target.value);
+            onValueChange={(v) => {
+              setFilterGender(v === "all" ? "" : v);
               setPage(1);
             }}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
           >
-            <option value="">Todos los géneros</option>
-            <option value="Hombre">Hombre</option>
-            <option value="Mujer">Mujer</option>
-            <option value="Unisex">Unisex</option>
-            <option value="Niño">Niño</option>
-          </select>
+            <SelectTrigger className="w-44 border-gray-200">
+              <SelectValue placeholder="Todos los géneros" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los géneros</SelectItem>
+              <SelectItem value="Hombre">Hombre</SelectItem>
+              <SelectItem value="Mujer">Mujer</SelectItem>
+              <SelectItem value="Unisex">Unisex</SelectItem>
+              <SelectItem value="Niño">Niño</SelectItem>
+            </SelectContent>
+          </Select>
           {hasFilters && (
             <Button
               variant="ghost"
