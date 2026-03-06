@@ -15,7 +15,6 @@ export async function createProduct(data: {
   brand?: string;
   gender?: string;
   categoryId: string;
-  price: number;
 }): Promise<Product> {
   return apiClient<Product>("/products", {
     method: "POST",
@@ -31,7 +30,6 @@ export async function updateProduct(
     brand: string;
     gender: string;
     categoryId: string;
-    price: number;
   }>,
 ): Promise<Product> {
   return apiClient<Product>(`/products/${id}`, {
