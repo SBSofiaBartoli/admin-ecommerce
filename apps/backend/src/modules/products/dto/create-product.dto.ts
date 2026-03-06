@@ -1,4 +1,16 @@
-import { IsString, IsOptional, MinLength, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  MinLength,
+  IsUUID,
+  IsEnum,
+} from 'class-validator';
+
+enum ProductStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  DRAFT = 'DRAFT',
+}
 
 export class CreateProductDto {
   @IsString()
@@ -19,4 +31,8 @@ export class CreateProductDto {
 
   @IsUUID()
   categoryId: string;
+
+  @IsOptional()
+  @IsEnum(ProductStatus)
+  status?: ProductStatus;
 }

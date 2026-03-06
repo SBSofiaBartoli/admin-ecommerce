@@ -18,6 +18,12 @@ enum PaymentStatus {
   FAILED
 }
 
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+}
+
 model Category {
   id       String @id @default(uuid())
   name     String
@@ -38,6 +44,7 @@ model Product {
   description String?
   brand       String?
   gender      String?
+  status ProductStatus @default(ACTIVE)
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
