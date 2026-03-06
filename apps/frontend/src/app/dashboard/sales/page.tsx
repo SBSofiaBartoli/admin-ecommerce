@@ -9,6 +9,13 @@ import SaleDetailModal from "./SaleDetailModal";
 import SearchInput from "@/components/shared/SearchInput";
 import TablePagination from "@/components/shared/TablePagination";
 import StatusBadge from "@/components/shared/StatusBadge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const statusLabels: Record<SaleStatus, string> = {
   PREPARATION: "En preparación",
@@ -115,20 +122,24 @@ export default function SalesPage() {
           <span className="text-sm text-gray-400 px-4">
             {filtered.length} venta{filtered.length !== 1 ? "s" : ""}
           </span>
-          <select
-            value={filterStatus}
-            onChange={(e) => {
-              setFilterStatus(e.target.value);
+          <Select
+            value={filterStatus || "all"}
+            onValueChange={(v) => {
+              setFilterStatus(v === "all" ? "" : v);
               setPage(1);
             }}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
           >
-            <option value="">Todos los estados</option>
-            <option value="PREPARATION">En preparación</option>
-            <option value="SHIPPED">Enviado</option>
-            <option value="COMPLETED">Completado</option>
-            <option value="CANCELLED">Cancelado</option>
-          </select>
+            <SelectTrigger className="w-48 border-gray-200">
+              <SelectValue placeholder="Todos los estados" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los estados</SelectItem>
+              <SelectItem value="PREPARATION">En preparación</SelectItem>
+              <SelectItem value="SHIPPED">Enviado</SelectItem>
+              <SelectItem value="COMPLETED">Completado</SelectItem>
+              <SelectItem value="CANCELLED">Cancelado</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
