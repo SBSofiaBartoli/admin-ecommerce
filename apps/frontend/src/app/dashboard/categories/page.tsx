@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import { Category } from "@/types";
 import { deleteCategory, getCategories, getCategoryChildren } from "@/api";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CategoriesPage() {
@@ -126,12 +126,15 @@ export default function CategoriesPage() {
 
         {/* Buscador */}
         <div className="max-w-sm">
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nombre..."
-            className="w-full rounded-md border px-3 py-2 text-sm"
-          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nombre..."
+              className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
+            />
+          </div>
         </div>
       </div>
 
@@ -142,7 +145,7 @@ export default function CategoriesPage() {
         <div className="border rounded-xl border-gray-200 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b bg-gray-100 bg-gray-50/80">
+              <tr className="border-b border-gray-300 bg-gray-100">
                 <th
                   className="px-4 py-4 text-center font-semibold text-gray-700 w-28"
                   onClick={() => {
@@ -276,18 +279,21 @@ export default function CategoriesPage() {
                     </tr>
                     {expanded.includes(cat.id) &&
                       (childrenMap[cat.id] ?? []).map((child) => (
-                        <tr key={child.id} className="bg-gray-50 border-b">
+                        <tr
+                          key={child.id}
+                          className="bg-gray-50/60 border-b border-gray-100"
+                        >
                           <td className="px-4 py-3 text-center text-muted-foreground text-xs">
                             {child.position ?? "—"}
                           </td>
-                          <td className="px-4 py-2 text-sm text-gray-600 pl-12 font-medium">
+                          <td className="px-4 py-2 text-sm text-gray-500 text-center font-medium">
                             └ {child.name}
                           </td>
                           <td className="text-center text-xs text-muted-foreground">
                             0
                           </td>
                           <td className="text-center">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                            <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-200">
                               {cat.name}
                             </span>
                           </td>
@@ -299,8 +305,8 @@ export default function CategoriesPage() {
               )}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm border-t">
-            <span className="text-muted-foreground">Página {page}</span>
+          <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
+            <span className="text-gray-600">Página {page}</span>
 
             <div className="flex gap-2">
               <Button
