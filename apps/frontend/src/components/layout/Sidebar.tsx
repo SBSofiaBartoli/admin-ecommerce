@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { logout } from "@/api";
 
 const navItems = [
+  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
   { href: "/dashboard/categories", label: "Categorías", icon: Tag },
   { href: "/dashboard/products", label: "Productos", icon: Package },
   { href: "/dashboard/sales", label: "Ventas", icon: ShoppingCart },
@@ -39,15 +40,18 @@ export default function Sidebar() {
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname.startsWith(item.href);
+          const isActive =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-colors ${
                 isActive
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                  ? "bg-gray-400 text-white"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -59,7 +63,7 @@ export default function Sidebar() {
       <div className="p-4 border-t">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 w-full transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Cerrar sesión
