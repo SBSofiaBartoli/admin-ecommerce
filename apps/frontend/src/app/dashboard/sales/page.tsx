@@ -17,6 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const statusLabels: Record<SaleStatus, string> = {
   PREPARATION: "En preparación",
@@ -246,16 +252,25 @@ export default function SalesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelected(sale);
-                            setModalOpen(true);
-                          }}
-                        >
-                          Gestionar
-                        </Button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelected(sale);
+                                  setModalOpen(true);
+                                }}
+                              >
+                                Gestionar
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Ver detalle y gestionar estado
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </td>
                   </tr>

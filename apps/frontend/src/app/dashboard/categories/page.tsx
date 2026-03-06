@@ -11,6 +11,12 @@ import { toast } from "sonner";
 import SearchInput from "@/components/shared/SearchInput";
 import TablePagination from "@/components/shared/TablePagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -260,33 +266,54 @@ export default function CategoriesPage() {
                       {/* Acciones */}
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
-                          <Button variant="ghost" size="icon">
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Ver detalle</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
 
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setSelectedCategory(cat);
-                              setModalOpen(true);
-                            }}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    setSelectedCategory(cat);
+                                    setModalOpen(true);
+                                  }}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Editar</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
 
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            disabled={deletingId === cat.id}
-                            onClick={() => {
-                              setSelectedCategory(cat);
-                              setDeleteId(cat.id);
-                              setIsConfirmOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="destructive"
+                                  size="icon"
+                                  disabled={deletingId === cat.id}
+                                  onClick={() => {
+                                    setSelectedCategory(cat);
+                                    setDeleteId(cat.id);
+                                    setIsConfirmOpen(true);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Eliminar</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
                       </td>
                     </tr>
