@@ -130,7 +130,7 @@ export default function DashboardPage() {
               recentSales.map((sale) => (
                 <div
                   key={sale.id}
-                  className="flex items-center justify-between py-2 border-b last:border-0"
+                  className="flex items-center justify-between py-2 border-b last:border-0 "
                 >
                   <div>
                     <p className="text-sm font-medium">
@@ -145,18 +145,18 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <div className="text-right space-y-1">
-                    <p className="text-sm font-semibold text-green-600">
+                    <p className="text-md font-semibold text-green-600">
                       ${sale.total.toFixed(2)}
                     </p>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-xs px-2 py-0.5 rounded-lg font-medium ${
                         sale.status === "COMPLETED"
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-green-100 text-green-900 border border-green-200"
                           : sale.status === "SHIPPED"
-                            ? "bg-blue-100 text-blue-700"
+                            ? "bg-blue-100 text-blue-900 border border-blue-200"
                             : sale.status === "CANCELLED"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-yellow-100 text-yellow-700"
+                              ? "bg-red-100 text-red-900 border border-red-200"
+                              : "bg-yellow-100 text-yellow-900 border border-yellow-200"
                       }`}
                     >
                       {sale.status === "COMPLETED"

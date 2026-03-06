@@ -16,10 +16,10 @@ const statusLabels: Record<SaleStatus, string> = {
 };
 
 const statusColors: Record<SaleStatus, string> = {
-  PREPARATION: "bg-yellow-100 text-yellow-700",
-  SHIPPED: "bg-blue-100 text-blue-700",
-  COMPLETED: "bg-green-100 text-green-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  PREPARATION: "bg-yellow-100 text-yellow-900 border border-yellow-200",
+  SHIPPED: "bg-blue-100 text-blue-900 border border-blue-200",
+  COMPLETED: "bg-green-100 text-green-900 border border-green-200",
+  CANCELLED: "bg-red-100 text-red-900 border border-red-200",
 };
 
 export default function SalesPage() {
@@ -108,7 +108,7 @@ export default function SalesPage() {
               setPage(1);
             }}
             placeholder="Buscar por cliente u orden..."
-            className="pl-9 pr-4 py-2 rounded-lg border text-sm w-72 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
           />
         </div>
         <select
@@ -117,7 +117,7 @@ export default function SalesPage() {
             setFilterStatus(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
         >
           <option value="">Todos los estados</option>
           <option value="PREPARATION">En preparación</option>
@@ -137,7 +137,7 @@ export default function SalesPage() {
         <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b bg-gray-100 bg-gray-50/80">
+              <tr className="border-b border-gray-300 bg-gray-100">
                 <th className="px-4 py-4 text-left font-semibold text-gray-700">
                   Cliente
                 </th>
@@ -195,9 +195,9 @@ export default function SalesPage() {
                         {new Date(sale.createdAt).toLocaleDateString("es-AR")}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-8 py-3 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[sale.status]}`}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium ${statusColors[sale.status]}`}
                       >
                         {statusLabels[sale.status]}
                       </span>
@@ -207,10 +207,10 @@ export default function SalesPage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
                           sale.paymentStatus === "PAID"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-green-100 text-green-900 border border-green-200"
+                            : "bg-red-100 text-red-900 border border-red-200"
                         }`}
                       >
                         {sale.paymentStatus === "PAID" ? "Pagado" : "Fallido"}
@@ -235,8 +235,8 @@ export default function SalesPage() {
               )}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm border-t bg-gray-50">
-            <span className="text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
+            <span className="text-gray-600">
               Página {page} de {totalPages || 1}
             </span>
             <div className="flex gap-2">

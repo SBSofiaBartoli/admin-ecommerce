@@ -33,10 +33,10 @@ const nextStatusLabel: Record<SaleStatus, string> = {
 };
 
 const statusColors: Record<SaleStatus, string> = {
-  PREPARATION: "bg-yellow-100 text-yellow-700",
-  SHIPPED: "bg-blue-100 text-blue-700",
-  COMPLETED: "bg-green-100 text-green-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  PREPARATION: "bg-yellow-100 text-yellow-900",
+  SHIPPED: "bg-blue-100 text-blue-900",
+  COMPLETED: "bg-green-100 text-green-900",
+  CANCELLED: "bg-red-100 text-red-900",
 };
 
 const statusLabels: Record<SaleStatus, string> = {
@@ -67,14 +67,14 @@ export default function SaleDetailModal({
 
         <div className="space-y-4 text-sm">
           {/* ESTADO ACTUAL */}
-          <div className="border rounded-lg p-4 space-y-2">
+          <div className="border border-gray-300 rounded-lg p-4 space-y-2 overflow-hidden bg-white shadow-sm">
             <div className="flex items-center gap-2 font-semibold text-gray-700">
               <Truck className="w-4 h-4" />
               Estado Actual
             </div>
             <div className="flex items-center gap-3">
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[sale.status]}`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${statusColors[sale.status]}`}
               >
                 {statusLabels[sale.status]}
               </span>
@@ -86,7 +86,7 @@ export default function SaleDetailModal({
 
           {/* INFO CLIENTE + PAGO */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="border rounded-lg p-4 space-y-2">
+            <div className="border border-gray-300 rounded-lg p-4 space-y-2 overflow-hidden bg-white shadow-sm">
               <div className="flex items-center gap-2 font-semibold text-gray-700">
                 <User className="w-4 h-4" />
                 Información del Cliente
@@ -96,7 +96,7 @@ export default function SaleDetailModal({
               <p className="text-gray-400 text-xs">ID: {sale.customerId}</p>
             </div>
 
-            <div className="border rounded-lg p-4 space-y-2">
+            <div className="border border-gray-300 rounded-lg p-4 space-y-2 overflow-hidden bg-white shadow-sm">
               <div className="flex items-center gap-2 font-semibold text-gray-700">
                 <CreditCard className="w-4 h-4" />
                 Información de Pago
@@ -110,10 +110,10 @@ export default function SaleDetailModal({
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Estado</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  className={`px-2 py-0.5 rounded-lg text-xs font-medium ${
                     sale.paymentStatus === "PAID"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                      ? "bg-green-100 text-green-900 border border-green-200"
+                      : "bg-red-100 text-red-900 border border-red-200"
                   }`}
                 >
                   {sale.paymentStatus === "PAID" ? "Pagado" : "Fallido"}
@@ -128,7 +128,7 @@ export default function SaleDetailModal({
 
           {/* ENVIO */}
           {sale.shipment && (
-            <div className="border rounded-lg p-4 space-y-2">
+            <div className="border border-gray-300 rounded-lg p-4 space-y-2 overflow-hidden bg-white shadow-sm">
               <div className="flex items-center gap-2 font-semibold text-gray-700">
                 <MapPin className="w-4 h-4" />
                 Información de Envío
@@ -148,7 +148,7 @@ export default function SaleDetailModal({
 
           {/* HISTORIAL */}
           {sale.history && sale.history.length > 0 && (
-            <div className="border rounded-lg p-4 space-y-3">
+            <div className="border border-gray-300 rounded-lg p-4 space-y-3 overflow-hidden bg-white shadow-sm">
               <div className="flex items-center gap-2 font-semibold text-gray-700">
                 <Clock className="w-4 h-4" />
                 Historial de Modificaciones
@@ -173,7 +173,7 @@ export default function SaleDetailModal({
 
           {/* NOTAS */}
           {nextStatus && (
-            <div className="space-y-1">
+            <div className="space-y-1 ">
               <label className="text-gray-600 font-medium">
                 Notas para el cambio de estado (opcional)
               </label>
@@ -181,7 +181,7 @@ export default function SaleDetailModal({
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Agregar notas sobre el cambio de estado..."
-                className="w-full rounded-lg border px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 overflow-hidden bg-white shadow-sm"
                 rows={3}
               />
             </div>
