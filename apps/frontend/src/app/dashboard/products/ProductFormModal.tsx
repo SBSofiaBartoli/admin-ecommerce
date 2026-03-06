@@ -14,6 +14,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Product, Category, ProductStatus } from "@/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ProductFormModalProps {
   open: boolean;
@@ -95,85 +103,111 @@ export default function ProductFormModal({
           </DialogTitle>
           <DialogDescription>Completá los datos del producto</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="name">Nombre *</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre del producto"
-              required
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="description">Descripción</Label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descripción opcional"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="brand">Marca</Label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Sección información básica */}
+          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
+            <h3 className="font-semibold text-gray-700">Información básica</h3>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="name">Nombre *</Label>
               <Input
-                id="brand"
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                placeholder="Ej: Nike"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nombre del producto"
+                className="border-gray-200"
+                required
               />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="gender">Género</Label>
-              <select
-                id="gender"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-              >
-                <option value="">Sin especificar</option>
-                <option value="Hombre">Hombre</option>
-                <option value="Mujer">Mujer</option>
-                <option value="Unisex">Unisex</option>
-                <option value="Niño">Niño</option>
-              </select>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="description">Descripción</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Descripción detallada del producto"
+                className="border-gray-200 resize-none"
+                rows={3}
+              />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="status">Estado</Label>
-              <select
-                id="status"
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="brand">Marca *</Label>
+                <Input
+                  id="brand"
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
+                  placeholder="Ej: Nike"
+                  className="border-gray-200"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="gender">Género *</Label>
+                <Select
+                  value={gender || "none"}
+                  onValueChange={(v) => setGender(v === "none" ? "" : v)}
+                >
+                  <SelectTrigger className="border-gray-200">
+                    <SelectValue placeholder="Seleccioná un género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sin especificar</SelectItem>
+                    <SelectItem value="Hombre">Hombre</SelectItem>
+                    <SelectItem value="Mujer">Mujer</SelectItem>
+                    <SelectItem value="Unisex">Unisex</SelectItem>
+                    <SelectItem value="Niño">Niño</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Sección categoría y estado */}
+          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
+            <h3 className="font-semibold text-gray-700">Categoría y estado</h3>
+            <div className="grid grid-cols-2 gap-4"></div>
+            <div className="space-y-1.5">
+              <Label>Categoría *</Label>
+              <Select
+                value={categoryId || "none"}
+                onValueChange={(v) => setCategoryId(v === "none" ? "" : v)}
+              >
+                <SelectTrigger className="border-gray-200">
+                  <SelectValue placeholder="Seleccioná una categoría" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Seleccioná una categoría</SelectItem>
+                  {subcategories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name} {cat.parent ? `(${cat.parent.name})` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Estado</Label>
+              <Select
                 value={status}
-                onChange={(e) => setStatus(e.target.value as ProductStatus)}
-                className="w-full rounded-md border px-3 py-2 text-sm"
+                onValueChange={(v) => setStatus(v as ProductStatus)}
               >
-                <option value="ACTIVE">Activo</option>
-                <option value="INACTIVE">Inactivo</option>
-                <option value="DRAFT">Borrador</option>
-              </select>
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="categoryId">Categoría *</Label>
-              <select
-                id="categoryId"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                required
-              >
-                <option value="">Seleccioná una categoría</option>
-                {subcategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name} {cat.parent ? `(${cat.parent.name})` : ""}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="border-gray-200">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ACTIVE">Activo</SelectItem>
+                  <SelectItem value="INACTIVE">Inactivo</SelectItem>
+                  <SelectItem value="DRAFT">Borrador</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
           {error && <p className="text-sm text-red-500">{error}</p>}
+
           <DialogFooter>
             <Button
               type="button"
@@ -183,7 +217,11 @@ export default function ProductFormModal({
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-gray-900 hover:bg-gray-700"
+            >
               {loading
                 ? product
                   ? "Guardando..."

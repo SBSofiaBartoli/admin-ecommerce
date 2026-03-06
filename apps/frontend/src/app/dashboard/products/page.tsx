@@ -7,7 +7,7 @@ import { getCategories } from "@/api/categories";
 import { Product, Category } from "@/types";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
-import { Pencil, Trash2, X } from "lucide-react";
+import { ArchiveRestore, Pencil, Trash2, X } from "lucide-react";
 import ProductFormModal from "./ProductFormModal";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -115,9 +115,10 @@ export default function ProductsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Productos</h1>
+        <h1 className="text-4xl font-bold">Productos</h1>
         <div className="flex gap-2">
-          <Button variant="outline" className="text-sm">
+          <Button variant="outline" className="px-7 py-5 rounded-lg text-lg">
+            <ArchiveRestore className="w-5 h-5 text-gray-500" />
             Importar productos
           </Button>
           <Button
@@ -125,7 +126,7 @@ export default function ProductsPage() {
               setSelected(undefined);
               setModalOpen(true);
             }}
-            className="bg-gray-900 text-white text-sm"
+            className="px-7 py-5 rounded-lg bg-gray-900 text-white text-lg font-medium hover:bg-gray-700 transition-colors"
           >
             + Nuevo producto
           </Button>
@@ -143,6 +144,10 @@ export default function ProductsPage() {
           placeholder="Buscar por nombre..."
           width="w-72"
         />
+        <p className="text-sm text-gray-400">
+          Mostrando {Math.min(page * pageSize, filtered.length)} de{" "}
+          {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
+        </p>
         <div className="ml-auto flex items-center gap-2">
           <Select
             value={filterCategory || "all"}
@@ -192,10 +197,6 @@ export default function ProductsPage() {
             </Button>
           )}
         </div>
-        <p className="text-sm text-gray-400">
-          Mostrando {Math.min(page * pageSize, filtered.length)} de{" "}
-          {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
-        </p>
       </div>
 
       {/* Tabla */}

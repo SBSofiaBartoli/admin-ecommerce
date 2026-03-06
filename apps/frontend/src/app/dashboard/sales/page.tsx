@@ -125,8 +125,8 @@ export default function SalesPage() {
           width="w-96"
         />
 
-        <div className="ml-auto">
-          <span className="text-sm text-gray-400 px-4">
+        <div className="ml-auto flex items-center gap-6">
+          <span className="text-sm text-gray-500">
             {filtered.length} venta{filtered.length !== 1 ? "s" : ""}
           </span>
           <Select
