@@ -10,6 +10,7 @@ import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import { Pencil, Search, Trash2, X } from "lucide-react";
 import ProductFormModal from "./ProductFormModal";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -25,6 +26,7 @@ export default function ProductsPage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const searchParams = useSearchParams();
 
   async function load() {
     try {
@@ -45,6 +47,13 @@ export default function ProductsPage() {
   useEffect(() => {
     void load();
   }, []);
+
+  useEffect(() => {
+    if (searchParams.get("new") === "true") {
+      setSelected(undefined);
+      setModalOpen(true);
+    }
+  }, [searchParams]);
 
   async function handleDelete() {
     if (!deleteId) return;

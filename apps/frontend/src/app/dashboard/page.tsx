@@ -7,12 +7,14 @@ import { getCategories } from "@/api/categories";
 import { Product, Sale } from "@/types";
 import { Package, ShoppingCart, Tag, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
   const [categories, setCategories] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function load() {
@@ -206,6 +208,12 @@ export default function DashboardPage() {
             )}
           </div>
           <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => router.push("/dashboard/products?new=true")}
+              className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 flex items-center gap-1"
+            >
+              <span className="text-base leading-none">+</span> Añadir
+            </button>
             <Link href="/dashboard/products">
               <button className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50">
                 Ver todos
