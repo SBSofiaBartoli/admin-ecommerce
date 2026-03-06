@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import { Category } from "@/types";
 import { deleteCategory, getCategories, getCategoryChildren } from "@/api";
-import { Eye, Pencil, Search, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import SearchInput from "@/components/shared/SearchInput";
+import TablePagination from "@/components/shared/TablePagination";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -127,12 +129,10 @@ export default function CategoriesPage() {
         {/* Buscador */}
         <div className="max-w-sm">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
+            <SearchInput
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(v) => setSearch(v)}
               placeholder="Buscar por nombre..."
-              className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
             />
           </div>
         </div>
@@ -308,24 +308,12 @@ export default function CategoriesPage() {
           <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
             <span className="text-gray-600">Página {page}</span>
 
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Siguiente
-              </Button>
-            </div>
+            <TablePagination
+              page={page}
+              totalPages={totalPages}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+            />
           </div>
         </div>
       )}
