@@ -39,6 +39,11 @@ export default function DashboardPage() {
     0,
   );
   const totalSalesAmount = sales.reduce((sum, s) => sum + s.total, 0);
+  const totalValue = products.reduce((sum, p) => {
+    const productStock = p.variants?.reduce((s, v) => s + v.stock, 0) ?? 0;
+    const productPrice = p.variants?.[0]?.price ?? 0;
+    return sum + productStock * productPrice;
+  }, 0);
 
   if (loading) {
     return <div className="text-gray-500">Cargando...</div>;
@@ -100,7 +105,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Ventas recientes + Productos */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {/* Ventas recientes */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
@@ -109,7 +114,9 @@ export default function DashboardPage() {
               href="/dashboard/sales"
               className="text-xs text-blue-500 hover:underline"
             >
-              Ver todas
+              <button className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50">
+                Ver todas
+              </button>
             </Link>
           </div>
           <div className="space-y-3">
@@ -165,62 +172,104 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Productos recientes */}
+        {/* Inventario de productos */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Productos recientes</h2>
-            <Link
-              href="/dashboard/products"
-              className="text-xs text-blue-500 hover:underline"
-            >
-              Ver todos
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="font-semibold text-gray-900">
+              Inventario de Productos
+            </h2>
+            <Package className="w-4 h-4 text-gray-400" />
+          </div>
+          <p className="text-3xl font-bold mt-2">{products.length}</p>
+          <p className="text-xs text-gray-400 mb-1">Productos en inventario</p>
+          <p className="text-sm font-medium text-gray-700 mb-4">
+            Valor: ${totalValue.toFixed(2)}
+          </p>
+          <div className="space-y-2">
+            {topProducts.map((product) => (
+              <div
+                key={product.id}
+                className="flex items-center justify-between text-sm"
+              >
+                <span className="truncate max-w-[180px] text-gray-700">
+                  {product.name}
+                </span>
+                <span className="text-gray-400 shrink-0 ml-2">
+                  {product.variants?.reduce((s, v) => s + v.stock, 0) ?? 0} u.
+                </span>
+              </div>
+            ))}
+            {products.length > 5 && (
+              <p className="text-xs text-gray-400">
+                +{products.length - 5} productos más
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2 mt-4">
+            <Link href="/dashboard/products">
+              <button className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50">
+                Ver todos
+              </button>
             </Link>
           </div>
+        </div>
+
+        {/* Productos mas vendidos */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-gray-900">
+              Productos más vendidos
+            </h2>
+            <TrendingUp className="w-4 h-4 text-gray-400" />
+          </div>
           <div className="space-y-3">
-            {topProducts.length === 0 ? (
+            {sales.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-4">
-                No hay productos aún
+                No hay productos top para mostrar
               </p>
             ) : (
-              topProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center gap-3 py-2 border-b last:border-0"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
-                    <Package className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {product.name}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {product.category?.name ?? "—"}
-                      {product.brand ? ` · ${product.brand}` : ""}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      Stock:{" "}
-                      {product.variants?.reduce((s, v) => s + v.stock, 0) ?? 0}{" "}
-                      u.
-                    </p>
-                  </div>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${
-                      product.status === "ACTIVE"
-                        ? "bg-green-100 text-green-700"
-                        : product.status === "DRAFT"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {product.status === "ACTIVE"
-                      ? "Activo"
-                      : product.status === "DRAFT"
-                        ? "Borrador"
-                        : "Inactivo"}
-                  </span>
-                </div>
-              ))
+              (() => {
+                const countMap: Record<
+                  string,
+                  { name: string; count: number }
+                > = {};
+                sales.forEach((sale) => {
+                  sale.items?.forEach((item) => {
+                    const name = item.variant?.product?.name ?? item.variantId;
+                    if (!countMap[item.variantId]) {
+                      countMap[item.variantId] = { name, count: 0 };
+                    }
+                    countMap[item.variantId].count += item.quantity;
+                  });
+                });
+                const sorted = Object.values(countMap)
+                  .sort((a, b) => b.count - a.count)
+                  .slice(0, 5);
+                return sorted.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-4">
+                    No hay productos top para mostrar
+                  </p>
+                ) : (
+                  sorted.map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-2 border-b last:border-0"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-400 w-4">
+                          {i + 1}
+                        </span>
+                        <p className="text-sm font-medium truncate max-w-[160px]">
+                          {item.name}
+                        </p>
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {item.count} vendidos
+                      </span>
+                    </div>
+                  ))
+                );
+              })()
             )}
           </div>
         </div>
