@@ -1,4 +1,4 @@
-import { Product } from "@/types";
+import { Product, ProductStatus } from "@/types";
 import { apiClient } from "./client";
 
 export async function getProducts(): Promise<Product[]> {
@@ -15,6 +15,7 @@ export async function createProduct(data: {
   brand?: string;
   gender?: string;
   categoryId: string;
+  status?: ProductStatus;
 }): Promise<Product> {
   return apiClient<Product>("/products", {
     method: "POST",

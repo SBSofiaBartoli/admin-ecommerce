@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import { Pencil, Search, Trash2, X } from "lucide-react";
 import ProductFormModal from "./ProductFormModal";
+import Image from "next/image";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -171,6 +172,9 @@ export default function ProductsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-gray-50">
+                <th className="px-4 py-4 text-left font-semibold text-gray-700 w-16">
+                  Foto
+                </th>
                 <th className="px-4 py-4 text-left font-semibold text-gray-700 w-48">
                   Nombre
                 </th>
@@ -180,8 +184,11 @@ export default function ProductsPage() {
                 <th className="px-4 py-4 text-center font-semibold text-gray-700 w-24">
                   Marca
                 </th>
+                <th className="px-4 py-4 text-center font-semibold text-gray-700 w-28">
+                  Stock total
+                </th>
                 <th className="px-4 py-4 text-center font-semibold text-gray-700 w-24">
-                  Género
+                  Estado
                 </th>
                 <th className="px-4 py-4 text-center font-semibold text-gray-700 w-32">
                   Acciones
@@ -192,7 +199,7 @@ export default function ProductsPage() {
               {paginated.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="px-4 py-12 text-center text-gray-400"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -212,59 +219,97 @@ export default function ProductsPage() {
                   </td>
                 </tr>
               ) : (
-                paginated.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="border-b last:border-0 hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">
-                        {product.name}
-                      </div>
-                      {product.description && (
-                        <div className="text-xs text-gray-400 truncate max-w-xs mt-0.5">
-                          {product.description}
+                paginated.map((product) => {
+                  const totalStock =
+                    product.variants?.reduce((sum, v) => sum + v.stock, 0) ?? 0;
+                  const firstImage = product.images?.[0]?.url;
+
+                  return (
+                    <tr
+                      key={product.id}
+                      className="border-b last:border-0 hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        {firstImage ? (
+                          <Image
+                            src={firstImage}
+                            alt={product.name}
+                            width={40}
+                            height={40}
+                            className="rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                            📦
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-gray-900">
+                          {product.name}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                        {product.category?.name ?? "—"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center text-gray-600">
-                      {product.brand ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-center text-gray-600">
-                      {product.gender ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setSelected(product);
-                            setModalOpen(true);
-                          }}
+                        {product.description && (
+                          <div className="text-xs text-gray-400 truncate max-w-xs mt-0.5">
+                            {product.description}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                          {product.category?.name ?? "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-gray-600">
+                        {product.brand ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-center text-gray-600">
+                        {totalStock} unidades
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            product.status === "ACTIVE"
+                              ? "bg-green-100 text-green-700"
+                              : product.status === "DRAFT"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-gray-100 text-gray-500"
+                          }`}
                         >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setSelected(product);
-                            setDeleteId(product.id);
-                            setIsConfirmOpen(true);
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                          {product.status === "ACTIVE"
+                            ? "Activo"
+                            : product.status === "DRAFT"
+                              ? "Borrador"
+                              : "Inactivo"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelected(product);
+                              setModalOpen(true);
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelected(product);
+                              setDeleteId(product.id);
+                              setIsConfirmOpen(true);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

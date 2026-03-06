@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Product, Category } from "@/types";
+import { Product, Category, ProductStatus } from "@/types";
 
 interface ProductFormModalProps {
   open: boolean;
@@ -37,6 +37,9 @@ export default function ProductFormModal({
   const [categoryId, setCategoryId] = useState(product?.categoryId ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [status, setStatus] = useState<ProductStatus>(
+    product?.status ?? "ACTIVE",
+  );
 
   useEffect(() => {
     if (open) {
@@ -46,6 +49,7 @@ export default function ProductFormModal({
       setGender(product?.gender ?? "");
       setCategoryId(product?.categoryId ?? "");
       setError("");
+      setStatus(product?.status ?? "ACTIVE");
     }
   }, [open, product]);
 
@@ -60,6 +64,7 @@ export default function ProductFormModal({
         brand: brand || undefined,
         gender: gender || undefined,
         categoryId,
+        status,
       };
       if (product) {
         await updateProduct(product.id, data);
@@ -135,6 +140,19 @@ export default function ProductFormModal({
                 <option value="Mujer">Mujer</option>
                 <option value="Unisex">Unisex</option>
                 <option value="Niño">Niño</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="status">Estado</Label>
+              <select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as ProductStatus)}
+                className="w-full rounded-md border px-3 py-2 text-sm"
+              >
+                <option value="ACTIVE">Activo</option>
+                <option value="INACTIVE">Inactivo</option>
+                <option value="DRAFT">Borrador</option>
               </select>
             </div>
             <div className="space-y-1">
