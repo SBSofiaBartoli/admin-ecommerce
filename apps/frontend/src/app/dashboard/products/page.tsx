@@ -116,7 +116,8 @@ export default function ProductsPage() {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="space-y-3"></div>
+      <div className="flex items-center gap-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -126,51 +127,54 @@ export default function ProductsPage() {
               setPage(1);
             }}
             placeholder="Buscar por nombre..."
-            className="pl-9 pr-4 py-2 rounded-lg border text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
           />
         </div>
-        <select
-          value={filterCategory}
-          onChange={(e) => {
-            setFilterCategory(e.target.value);
-            setPage(1);
-          }}
-          className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
-        >
-          <option value="">Todas las categorías</option>
-          {subcategories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filterGender}
-          onChange={(e) => {
-            setFilterGender(e.target.value);
-            setPage(1);
-          }}
-          className="rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
-        >
-          <option value="">Todos los géneros</option>
-          <option value="Hombre">Hombre</option>
-          <option value="Mujer">Mujer</option>
-          <option value="Unisex">Unisex</option>
-          <option value="Niño">Niño</option>
-        </select>
-        {hasFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="text-gray-500 gap-1"
+        <div className="ml-auto flex items-center gap-2">
+          <select
+            value={filterCategory}
+            onChange={(e) => {
+              setFilterCategory(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
           >
-            <X className="w-4 h-4" /> Limpiar
-          </Button>
-        )}
-        <span className="text-sm text-gray-500 ml-auto">
+            <option value="">Todas las categorías</option>
+            {subcategories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterGender}
+            onChange={(e) => {
+              setFilterGender(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
+          >
+            <option value="">Todos los géneros</option>
+            <option value="Hombre">Hombre</option>
+            <option value="Mujer">Mujer</option>
+            <option value="Unisex">Unisex</option>
+            <option value="Niño">Niño</option>
+          </select>
+          {hasFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="text-gray-500 gap-1"
+            >
+              <X className="w-4 h-4" /> Limpiar
+            </Button>
+          )}
+        </div>
+        <p className="text-sm text-gray-400">
+          Mostrando {Math.min(page * pageSize, filtered.length)} de{" "}
           {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
-        </span>
+        </p>
       </div>
 
       {/* Tabla */}
@@ -180,7 +184,7 @@ export default function ProductsPage() {
         <div className="border rounded-xl border-gray-200 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b bg-gray-100 bg-gray-50/80">
+              <tr className="border-b border-gray-300 bg-gray-100">
                 <th className="px-4 py-4 text-left font-semibold text-gray-700 w-16">
                   Foto
                 </th>
@@ -264,7 +268,7 @@ export default function ProductsPage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                        <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-800 border border-blue-200">
                           {product.category?.name ?? "—"}
                         </span>
                       </td>
@@ -276,12 +280,12 @@ export default function ProductsPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${
                             product.status === "ACTIVE"
-                              ? "bg-green-100 text-green-700"
+                              ? "bg-green-100 text-green-900 border border-green-200"
                               : product.status === "DRAFT"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-gray-100 text-gray-500"
+                                ? "bg-yellow-100 text-yellow-900 border border-yellow-200"
+                                : "bg-gray-100 text-gray-700 border border-gray-200"
                           }`}
                         >
                           {product.status === "ACTIVE"
@@ -322,8 +326,8 @@ export default function ProductsPage() {
               )}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm border-t bg-gray-50">
-            <span className="text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
+            <span className="text-gray-600">
               Página {page} de {totalPages || 1}
             </span>
             <div className="flex gap-2">
