@@ -1,8 +1,11 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Admin Ecommerce",
+  title: "SmartStyle Admin",
   description: "Admin panel",
+  icons: {
+    icon: "/logo-favicon.png",
+  },
 };
 
 export default function RootLayout({
