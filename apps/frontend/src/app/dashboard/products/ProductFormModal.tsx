@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Product, Category, ProductStatus } from "@/types";
 import {
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle, Trash2, ImagePlus } from "lucide-react";
+import { PlusCircle, Trash2, ImagePlus, X, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface FormOption {
@@ -44,10 +45,10 @@ interface ProductFormModalProps {
 }
 
 function generateVariants(options: FormOption[]): ProductVariantRow[] {
-  if (options.length === 0 || options.every((o) => o.values.length === 0))
-    return [];
-
-  const filledOptions = options.filter((o) => o.values.length > 0);
+  const filledOptions = options.filter(
+    (o) => o.name.trim() && o.values.length > 0,
+  );
+  if (filledOptions.length === 0) return [];
   const combinations: string[][] = filledOptions.reduce<string[][]>(
     (acc, option) => {
       if (acc.length === 0) return option.values.map((v) => [v]);
@@ -115,11 +116,12 @@ export default function ProductFormModal({
   }
 
   function addValue(optionIndex: number, value: string) {
-    if (!value.trim()) return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
     setOptions((prev) =>
       prev.map((o, i) =>
-        i === optionIndex && !o.values.includes(value)
-          ? { ...o, values: [...o.values, value] }
+        i === optionIndex && !o.values.includes(trimmed)
+          ? { ...o, values: [...o.values, trimmed] }
           : o,
       ),
     );
@@ -188,245 +190,273 @@ export default function ProductFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="!max-w-7xl w-[90vw] max-h-[85vh] overflow-y-auto border-0 shadow-xl rounded-2xl">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg font-bold flex items-center gap-2">
+            <Package className="w-6 h-6 text-gray-500" />
             {product ? "Editar producto" : "Nuevo producto"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {product
+              ? "Editá los datos del producto"
+              : "Completá los datos para crear un nuevo producto"}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Sección información básica */}
-          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
-            <h3 className="font-semibold text-gray-700">Información básica</h3>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Nombre del Producto*</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nombre del producto"
-                className="border-gray-200"
-                required
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="description">Descripción</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descripción detallada del producto"
-                className="border-gray-200 resize-none"
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="brand">Marca *</Label>
-                <Input
-                  id="brand"
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                  placeholder="Ej: Nike"
-                  className="border-gray-200"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="gender">Género *</Label>
-                <Select
-                  value={gender || "none"}
-                  onValueChange={(v) => setGender(v === "none" ? "" : v)}
-                >
-                  <SelectTrigger className="border-gray-200">
-                    <SelectValue placeholder="Seleccioná un género" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Sin especificar</SelectItem>
-                    <SelectItem value="Hombre">Hombre</SelectItem>
-                    <SelectItem value="Mujer">Mujer</SelectItem>
-                    <SelectItem value="Unisex">Unisex</SelectItem>
-                    <SelectItem value="Niño">Niño</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Imágenes — UI lista para Cloudinary */}
-          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
-            <h3 className="font-semibold text-gray-700">
-              Imágenes del Producto
-            </h3>
-            <div className="space-y-1.5">
-              <button
-                type="button"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
-              >
-                <ImagePlus className="w-4 h-4" />
-                Subir Imágenes
-              </button>
-              <p className="text-xs text-gray-400">Próximamente disponible</p>
-            </div>
-          </div>
-
-          {/* Sección categoría y estado */}
-          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
-            <h3 className="font-semibold text-gray-700">Categoría y estado</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Categoría *</Label>
-                <Select
-                  value={categoryId || "none"}
-                  onValueChange={(v) => setCategoryId(v === "none" ? "" : v)}
-                >
-                  <SelectTrigger className="border-gray-200">
-                    <SelectValue placeholder="Seleccioná una categoría" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">
-                      Seleccioná una categoría
-                    </SelectItem>
-                    {subcategories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name} {cat.parent ? `(${cat.parent.name})` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Estado</Label>
-              <Select
-                value={status}
-                onValueChange={(v) => setStatus(v as ProductStatus)}
-              >
-                <SelectTrigger className="border-gray-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ACTIVE">Activo</SelectItem>
-                  <SelectItem value="INACTIVE">Inactivo</SelectItem>
-                  <SelectItem value="DRAFT">Borrador</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Opciones del producto */}
-          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-gray-700">
-                  Opciones del Producto
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Layout 2 columnas */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* COLUMNA IZQUIERDA */}
+            <div className="space-y-4">
+              {/* Sección información básica */}
+              <div className="rounded-xl border border-gray-100 p-4 space-y-3">
+                <h3 className="font-semibold text-gray-700 text-dm">
+                  Información básica
                 </h3>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Definí las características que tendrán variaciones (ej: Color,
-                  Talla, Material)
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={addOption}
-                className="gap-1 text-gray-600"
-              >
-                <PlusCircle className="w-4 h-4" />
-                Agregar Opción
-              </Button>
-            </div>
 
-            {options.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-2">
-                No hay opciones definidas
-              </p>
-            )}
-
-            {options.map((option, optIndex) => (
-              <OptionRow
-                key={optIndex}
-                option={option}
-                onNameChange={(v) => updateOptionName(optIndex, v)}
-                onAddValue={(v) => addValue(optIndex, v)}
-                onRemoveValue={(v) => removeValue(optIndex, v)}
-                onRemove={() => removeOption(optIndex)}
-              />
-            ))}
-          </div>
-
-          {/* Variantes generadas */}
-          <div className="rounded-xl border border-gray-100 p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-700">
-                Variantes del Producto
-              </h3>
-              <span className="text-xs text-gray-400">SKU Único</span>
-            </div>
-
-            {variants.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">
-                Definí opciones de producto para generar variantes
-                automáticamente.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                <div className="grid grid-cols-12 gap-2 px-2 text-xs text-gray-400 font-medium">
-                  <span className="col-span-5">Variante</span>
-                  <span className="col-span-4">Precio *</span>
-                  <span className="col-span-3">SKU</span>
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-sm">
+                    Nombre del Producto*
+                  </Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nombre del producto"
+                    className="border-gray-200 h-9"
+                    required
+                  />
                 </div>
-                {variants.map((variant, vIndex) => (
-                  <div
-                    key={vIndex}
-                    className="grid grid-cols-12 gap-2 items-center px-2 py-1.5 rounded-lg bg-gray-50"
-                  >
-                    <div className="col-span-5 flex flex-wrap gap-1">
-                      {variant.combination.map((val) => (
-                        <Badge
-                          key={val}
-                          variant="outline"
-                          className="text-xs bg-white border-gray-200"
-                        >
-                          {val}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="col-span-4">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={variant.price}
-                        onChange={(e) =>
-                          updateVariant(vIndex, "price", e.target.value)
-                        }
-                        className="border-gray-200 h-8 text-sm"
-                      />
-                    </div>
-                    <div className="col-span-3">
-                      <Input
-                        placeholder="SKU-001"
-                        value={variant.sku}
-                        onChange={(e) =>
-                          updateVariant(vIndex, "sku", e.target.value)
-                        }
-                        className="border-gray-200 h-8 text-sm"
-                      />
-                    </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="description" className="text-sm">
+                    Descripción
+                  </Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Descripción detallada del producto"
+                    className="border-gray-200 resize-none text-sm"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="brand" className="text-sm">
+                      Marca *
+                    </Label>
+                    <Input
+                      id="brand"
+                      value={brand}
+                      onChange={(e) => setBrand(e.target.value)}
+                      placeholder="Ej: Nike"
+                      className="border-gray-200 h-9"
+                    />
                   </div>
-                ))}
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="gender" className="text-sm">
+                      Género *
+                    </Label>
+                    <Select
+                      value={gender || "none"}
+                      onValueChange={(v) => setGender(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger className="border-gray-200 h-9">
+                        <SelectValue placeholder="Seleccioná un género" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Sin especificar</SelectItem>
+                        <SelectItem value="Hombre">Hombre</SelectItem>
+                        <SelectItem value="Mujer">Mujer</SelectItem>
+                        <SelectItem value="Unisex">Unisex</SelectItem>
+                        <SelectItem value="Niño">Niño</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Categoría + Estado */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">Categoría *</Label>
+                    <Select
+                      value={categoryId || "none"}
+                      onValueChange={(v) =>
+                        setCategoryId(v === "none" ? "" : v)
+                      }
+                    >
+                      <SelectTrigger className="border-gray-200 h-9">
+                        <SelectValue placeholder="Seleccioná una categoría" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          Seleccioná una categoría
+                        </SelectItem>
+                        {subcategories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}{" "}
+                            {cat.parent ? `(${cat.parent.name})` : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">Estado</Label>
+                    <Select
+                      value={status}
+                      onValueChange={(v) => setStatus(v as ProductStatus)}
+                    >
+                      <SelectTrigger className="border-gray-200 h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ACTIVE">Activo</SelectItem>
+                        <SelectItem value="INACTIVE">Inactivo</SelectItem>
+                        <SelectItem value="DRAFT">Borrador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Imágenes — UI lista para Cloudinary */}
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Imágenes del Producto</Label>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors w-full justify-center"
+                  >
+                    <ImagePlus className="w-5 h-5" />
+                    Subir Imágenes
+                  </button>
+                  <p className="text-sm text-gray-400 text-center">
+                    Próximamente disponible
+                  </p>
+                </div>
               </div>
-            )}
+            </div>
+
+            {/* COLUMNA DERECHA */}
+            <div className="space-y-4">
+              {/* Opciones del producto */}
+              <div className="rounded-xl border border-gray-100 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-700 text-dm">
+                      Opciones del Producto
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Definí las características que tendrán variaciones (ej:
+                      Color, Talla, Material)
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={addOption}
+                    className="gap-1 text-gray-600 text-sm h-8"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    Agregar Opción
+                  </Button>
+                </div>
+
+                {options.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-3">
+                    No hay opciones definidas
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {options.map((option, optIndex) => (
+                      <OptionRow
+                        key={optIndex}
+                        option={option}
+                        onNameChange={(v) => updateOptionName(optIndex, v)}
+                        onAddValue={(v) => addValue(optIndex, v)}
+                        onRemoveValue={(v) => removeValue(optIndex, v)}
+                        onRemove={() => removeOption(optIndex)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Variantes generadas */}
+              <div className="rounded-xl border border-gray-100 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-700 text-dm">
+                    Variantes del Producto
+                  </h3>
+                  <span className="text-sm text-gray-400">
+                    {variants.length} variante{variants.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {variants.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-3">
+                    Definí opciones de producto para generar variantes
+                    automáticamente.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-12 gap-2 px-2 text-sm px-1 text-gray-400 font-medium">
+                      <span className="col-span-5">Variante</span>
+                      <span className="col-span-4">Precio *</span>
+                      <span className="col-span-3">SKU</span>
+                    </div>
+                    {variants.map((variant, vIndex) => (
+                      <div
+                        key={vIndex}
+                        className="grid grid-cols-12 gap-2 items-center px-1 py-1.5 rounded-lg bg-gray-50"
+                      >
+                        <div className="col-span-5 flex flex-wrap gap-1">
+                          {variant.combination.map((val) => (
+                            <Badge
+                              key={val}
+                              variant="outline"
+                              className="text-sm bg-white border-gray-200 px-1.5 py-0"
+                            >
+                              {val}
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="col-span-4">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            value={variant.price}
+                            onChange={(e) =>
+                              updateVariant(vIndex, "price", e.target.value)
+                            }
+                            className="border-gray-200 h-7 text-sm"
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <Input
+                            placeholder="SKU-001"
+                            value={variant.sku}
+                            onChange={(e) =>
+                              updateVariant(vIndex, "sku", e.target.value)
+                            }
+                            className="border-gray-200 h-7 text-sm"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-dm text-red-500">{error}</p>}
 
           <DialogFooter>
             <Button
@@ -483,29 +513,35 @@ function OptionRow({
     }
   }
 
+  function handleAddClick() {
+    onAddValue(inputValue);
+    setInputValue("");
+  }
+
   return (
-    <div className="rounded-lg border border-gray-100 p-3 space-y-3 bg-white">
+    <div className="rounded-lg border border-gray-100 p-3 space-y-2 bg-white">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-1">
-          <Label className="text-xs text-gray-500 whitespace-nowrap">
+          <Label className="text-sm text-gray-500 whitespace-nowrap">
             Nombre de la Opción
           </Label>
           {option.name && (
             <Badge
               variant="outline"
-              className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+              className="text-sm bg-blue-50 text-blue-700 border-blue-200 px-1.5 py-0"
             >
               {option.name}
             </Badge>
           )}
         </div>
-        <button
+        <Button
           type="button"
+          variant="destructive"
           onClick={onRemove}
-          className="text-red-400 hover:text-red-600"
+          className="text-red-400 hover:text-red-600 h-7 w-7"
         >
-          <Trash2 className="w-4 h-4" />
-        </button>
+          <Trash2 className="w-4 h-4 text-red-900" />
+        </Button>
       </div>
 
       <Input
@@ -515,30 +551,42 @@ function OptionRow({
         className="border-gray-200 h-8 text-sm"
       />
 
-      <div>
-        <Label className="text-xs text-gray-500">Valores disponibles</Label>
-        <div className="flex flex-wrap gap-1 mt-1.5 mb-2">
+      {/* Valores existentes */}
+      {option.values.length > 0 && (
+        <div className="flex flex-wrap gap-1">
           {option.values.map((val) => (
             <Badge
               key={val}
               variant="outline"
-              className="text-xs gap-1 cursor-pointer hover:bg-red-50 hover:border-red-200"
+              className="text-sm gap-1 pr-1 cursor-pointer hover:bg-red-50 hover:border-red-200"
               onClick={() => onRemoveValue(val)}
             >
-              {val} ×
+              {val}
+              <button type="button" onClick={() => onRemoveValue(val)}>
+                <X className="w-3 h-3" />
+              </button>
             </Badge>
           ))}
         </div>
-        <div className="flex items-center gap-1 text-sm text-gray-400 cursor-pointer">
-          <PlusCircle className="w-4 h-4" />
-          <input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Agregar Valor (Enter para confirmar)"
-            className="border-0 outline-none text-sm text-gray-600 placeholder:text-gray-400 bg-transparent w-full"
-          />
-        </div>
+      )}
+      {/* Input agregar valor */}
+      <div className="flex gap-1">
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Agregar Valor..."
+          className="border-gray-200 h-8 text-sm flex-1"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleAddClick}
+          className="h-8 px-2"
+        >
+          <PlusCircle className="w-3.5 h-3.5" />
+        </Button>
       </div>
     </div>
   );
