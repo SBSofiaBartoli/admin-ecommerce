@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -193,7 +194,21 @@ export default function ProductsPage() {
 
       {/* Tabla */}
       {loading ? (
-        <div className="text-gray-500">Cargando productos...</div>
+        <div className="rounded-xl border border-gray-100 overflow-hidden bg-white shadow-sm p-4 space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="h-10 w-10 rounded-lg" />
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-3 w-72" />
+              </div>
+              <Skeleton className="h-6 w-24 rounded-lg" />
+              <Skeleton className="h-6 w-16 rounded-lg" />
+              <Skeleton className="h-6 w-20 rounded-lg" />
+              <Skeleton className="h-8 w-16 rounded-lg" />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="border rounded-xl border-gray-200 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-base">

@@ -10,6 +10,7 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import SearchInput from "@/components/shared/SearchInput";
 import TablePagination from "@/components/shared/TablePagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -137,7 +138,21 @@ export default function CategoriesPage() {
       </div>
 
       {/* TABLA */}
-      {loading && <div className="text-gray-500">Cargando categorías...</div>}
+      {loading && (
+        <div className="rounded-xl border border-gray-100 overflow-hidden bg-white shadow-sm p-4 space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="h-4 w-12" />
+              <div className="flex-1">
+                <Skeleton className="h-4 w-36 mx-auto" />
+              </div>
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-6 w-20 rounded-lg" />
+              <Skeleton className="h-8 w-24 rounded-lg" />
+            </div>
+          ))}
+        </div>
+      )}
       {error && <div className="text-red-500 text-sm">{error}</div>}
       {!loading && !error && (
         <div className="border rounded-xl border-gray-200 overflow-hidden bg-white shadow-sm">

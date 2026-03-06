@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const statusLabels: Record<SaleStatus, string> = {
   PREPARATION: "En preparación",
@@ -145,7 +146,21 @@ export default function SalesPage() {
 
       {/* Tabla */}
       {loading ? (
-        <div className="text-gray-500">Cargando ventas...</div>
+        <div className="rounded-xl border border-gray-100 overflow-hidden bg-white shadow-sm p-4 space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-3 w-56" />
+              </div>
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-6 w-28 rounded-lg" />
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-6 w-20 rounded-lg" />
+              <Skeleton className="h-8 w-20 rounded-lg" />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-base">
