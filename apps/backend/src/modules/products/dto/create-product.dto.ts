@@ -9,6 +9,14 @@ export class CreateProductDto {
   @IsString()
   description?: string;
 
+  @IsOptional()
+  @IsString()
+  brand?: string;
+
+  @IsOptional()
+  @IsString()
+  gender?: string;
+
   @IsUUID()
   categoryId: string;
 }
