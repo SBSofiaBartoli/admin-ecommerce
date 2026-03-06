@@ -5,8 +5,10 @@ import { toast } from "sonner";
 import { getSales, createSale, updateSaleStatus } from "@/api/sales";
 import { Sale, SaleStatus } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import SaleDetailModal from "./SaleDetailModal";
+import SearchInput from "@/components/shared/SearchInput";
+import TablePagination from "@/components/shared/TablePagination";
+import StatusBadge from "@/components/shared/StatusBadge";
 
 const statusLabels: Record<SaleStatus, string> = {
   PREPARATION: "En preparación",
@@ -99,18 +101,15 @@ export default function SalesPage() {
 
       {/* Filtros */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Buscar por cliente u orden..."
-            className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
-          />
-        </div>
+        <SearchInput
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+          placeholder="Buscar por cliente u orden..."
+          width="w-96"
+        />
 
         <div className="ml-auto">
           <span className="text-sm text-gray-400 px-4">
@@ -199,25 +198,25 @@ export default function SalesPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap ${statusColors[sale.status]}`}
-                      >
-                        {statusLabels[sale.status]}
-                      </span>
+                      <StatusBadge
+                        status={sale.status}
+                        labels={statusLabels}
+                        colors={statusColors}
+                      />
                     </td>
                     <td className="px-4 py-3 text-center font-medium">
                       ${sale.total.toFixed(2)}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-                          sale.paymentStatus === "PAID"
-                            ? "bg-green-100 text-green-900 border border-green-200"
-                            : "bg-red-100 text-red-900 border border-red-200"
-                        }`}
-                      >
-                        {sale.paymentStatus === "PAID" ? "Pagado" : "Fallido"}
-                      </span>
+                      <StatusBadge
+                        status={sale.paymentStatus}
+                        labels={{ PAID: "Pagado", FAILED: "Fallido" }}
+                        colors={{
+                          PAID: "bg-green-100 text-green-900 border border-green-200",
+                          FAILED:
+                            "bg-red-100 text-red-900 border border-red-200",
+                        }}
+                      />
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center">
@@ -238,29 +237,12 @@ export default function SalesPage() {
               )}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
-            <span className="text-gray-600">
-              Página {page} de {totalPages || 1}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Siguiente
-              </Button>
-            </div>
-          </div>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => p - 1)}
+            onNext={() => setPage((p) => p + 1)}
+          />
         </div>
       )}
 

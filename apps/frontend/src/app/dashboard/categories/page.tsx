@@ -128,13 +128,11 @@ export default function CategoriesPage() {
 
         {/* Buscador */}
         <div className="max-w-sm">
-          <div className="relative">
-            <SearchInput
-              value={search}
-              onChange={(v) => setSearch(v)}
-              placeholder="Buscar por nombre..."
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(v) => setSearch(v)}
+            placeholder="Buscar por nombre..."
+          />
         </div>
       </div>
 
@@ -305,16 +303,13 @@ export default function CategoriesPage() {
               )}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
-            <span className="text-gray-600">Página {page}</span>
 
-            <TablePagination
-              page={page}
-              totalPages={totalPages}
-              onPrev={() => setPage((p) => p - 1)}
-              onNext={() => setPage((p) => p + 1)}
-            />
-          </div>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => p - 1)}
+            onNext={() => setPage((p) => p + 1)}
+          />
         </div>
       )}
       <CategoryFormModal

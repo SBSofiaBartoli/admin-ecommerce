@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import SearchInput from "@/components/shared/SearchInput";
 import TablePagination from "@/components/shared/TablePagination";
+import StatusBadge from "@/components/shared/StatusBadge";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -118,19 +119,16 @@ export default function ProductsPage() {
       </div>
 
       {/* Filtros */}
-      <div className="space-y-3"></div>
       <div className="flex items-center gap-3">
-        <div className="relative">
-          <SearchInput
-            value={search}
-            onChange={(v) => {
-              setSearch(v);
-              setPage(1);
-            }}
-            placeholder="Buscar por nombre..."
-            width="w-72"
-          />
-        </div>
+        <SearchInput
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+          placeholder="Buscar por nombre..."
+          width="w-72"
+        />
         <div className="ml-auto flex items-center gap-2">
           <select
             value={filterCategory}
@@ -186,7 +184,7 @@ export default function ProductsPage() {
           <table className="w-full text-base">
             <thead>
               <tr className="border-b border-gray-300 bg-gray-100">
-                <th className="px-4 py-4 text-left font-semibold text-gray-700 w-16">
+                <th className="px-8 py-4 text-left font-semibold text-gray-700 w-16">
                   Foto
                 </th>
                 <th className="px-4 py-4 text-left font-semibold text-gray-700 w-48">
@@ -243,7 +241,7 @@ export default function ProductsPage() {
                       key={product.id}
                       className="border-b border-gray-200 hover:bg-gray-50/60 transition-colors"
                     >
-                      <td className="px-4 py-3">
+                      <td className="px-8 py-3">
                         {firstImage ? (
                           <Image
                             src={firstImage}
@@ -280,21 +278,22 @@ export default function ProductsPage() {
                         {totalStock} unidades
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span
-                          className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${
-                            product.status === "ACTIVE"
-                              ? "bg-green-100 text-green-900 border border-green-200"
-                              : product.status === "DRAFT"
-                                ? "bg-yellow-100 text-yellow-900 border border-yellow-200"
-                                : "bg-gray-100 text-gray-700 border border-gray-200"
-                          }`}
-                        >
-                          {product.status === "ACTIVE"
-                            ? "Activo"
-                            : product.status === "DRAFT"
-                              ? "Borrador"
-                              : "Inactivo"}
-                        </span>
+                        <StatusBadge
+                          status={product.status}
+                          labels={{
+                            ACTIVE: "Activo",
+                            INACTIVE: "Inactivo",
+                            DRAFT: "Borrador",
+                          }}
+                          colors={{
+                            ACTIVE:
+                              "bg-green-100 text-green-900 border border-green-200",
+                            INACTIVE:
+                              "bg-gray-100 text-gray-600 border border-gray-200",
+                            DRAFT:
+                              "bg-yellow-100 text-yellow-900 border border-yellow-200",
+                          }}
+                        />
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
@@ -309,7 +308,7 @@ export default function ProductsPage() {
                             <Pencil className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="destructive"
                             size="icon"
                             onClick={() => {
                               setSelected(product);
@@ -317,7 +316,7 @@ export default function ProductsPage() {
                               setIsConfirmOpen(true);
                             }}
                           >
-                            <Trash2 className="w-4 h-4 text-red-500" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </td>
@@ -327,17 +326,12 @@ export default function ProductsPage() {
               )}
             </tbody>
           </table>
-          <div className="flex items-center justify-between px-4 py-3 text-sm border-t border-gray-300 bg-gray-100">
-            <span className="text-gray-600">
-              Página {page} de {totalPages || 1}
-            </span>
-            <TablePagination
-              page={page}
-              totalPages={totalPages}
-              onPrev={() => setPage((p) => p - 1)}
-              onNext={() => setPage((p) => p + 1)}
-            />
-          </div>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => p - 1)}
+            onNext={() => setPage((p) => p + 1)}
+          />
         </div>
       )}
 
