@@ -127,10 +127,16 @@ export default function DashboardPage() {
                     <p className="text-sm font-medium">
                       {sale.customer?.name ?? "Cliente Demo"}
                     </p>
-                    <p className="text-xs text-gray-400">{sale.orderNumber}</p>
+                    <p className="text-xs text-gray-400">
+                      Orden #{sale.orderNumber}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {new Date(sale.createdAt).toLocaleDateString("es-AR")}
+                      {sale.paymentMethod ? ` · ${sale.paymentMethod}` : ""}
+                    </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold">
+                  <div className="text-right space-y-1">
+                    <p className="text-sm font-semibold text-green-600">
                       ${sale.total.toFixed(2)}
                     </p>
                     <span
@@ -181,7 +187,7 @@ export default function DashboardPage() {
                   key={product.id}
                   className="flex items-center gap-3 py-2 border-b last:border-0"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
+                  <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
                     <Package className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -190,6 +196,12 @@ export default function DashboardPage() {
                     </p>
                     <p className="text-xs text-gray-400">
                       {product.category?.name ?? "—"}
+                      {product.brand ? ` · ${product.brand}` : ""}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Stock:{" "}
+                      {product.variants?.reduce((s, v) => s + v.stock, 0) ?? 0}{" "}
+                      u.
                     </p>
                   </div>
                   <span
