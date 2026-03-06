@@ -24,16 +24,17 @@ export default function Sidebar() {
 
   function handleLogout() {
     logout();
-    router.push("/login");
+    router.push("/auth/login");
   }
 
   return (
-    <aside className="w-64 min-h-screen bg-white border-r flex flex-col">
+    <aside className="w-64 min-h-screen bg-white border-r flex flex-col shadow-sm">
       <div className="p-6 border-b">
-        <div className="flex items-center gap-2">
-          <LayoutDashboard className="w-6 h-6" />
-          <span className="font-bold text-lg">Admin Panel</span>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center"></div>
+          <LayoutDashboard className="w-4 h-4 text-white" />
         </div>
+        <span className="font-bold text-lg tracking-tight">Admin Panel</span>
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
@@ -43,10 +44,10 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-gray-100 font-medium text-gray-900"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -58,7 +59,7 @@ export default function Sidebar() {
       <div className="p-4 border-t">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900 w-full transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 w-full transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Cerrar sesión

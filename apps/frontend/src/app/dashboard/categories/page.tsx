@@ -118,7 +118,7 @@ export default function CategoriesPage() {
               setSelectedCategory(undefined);
               setModalOpen(true);
             }}
-            className="px-4 py-2 rounded-md bg-black text-white text-sm"
+            className="px-7 py-5 rounded-lg bg-gray-900 text-white text-lg font-medium hover:bg-gray-700 transition-colors"
           >
             + Nueva categoría
           </Button>
@@ -139,12 +139,12 @@ export default function CategoriesPage() {
       {loading && <div className="text-gray-500">Cargando categorías...</div>}
       {error && <div className="text-red-500 text-sm">{error}</div>}
       {!loading && !error && (
-        <div className="border rounded-lg overflow-hidden bg-white">
-          <table className="w-full text-sm">
+        <div className="border rounded-xl border-gray-200 overflow-hidden bg-white shadow-sm">
+          <table className="w-full text-base">
             <thead>
-              <tr className="border-b bg-muted/50">
+              <tr className="border-b bg-gray-50">
                 <th
-                  className="px-4 py-3 text-center font-semibold text-base w-28"
+                  className="px-4 py-4 text-center font-semibold text-gray-700 w-28"
                   onClick={() => {
                     setSortField("position");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -153,7 +153,7 @@ export default function CategoriesPage() {
                   Posición
                 </th>
                 <th
-                  className="px-4 py-3 text-center font-semibold text-base w-48"
+                  className="px-4 py-4 text-center font-semibold text-gray-700 w-48"
                   onClick={() => {
                     setSortField("name");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -162,7 +162,7 @@ export default function CategoriesPage() {
                   Nombre
                 </th>
                 <th
-                  className="px-4 py-3 text-center font-semibold text-base w-30"
+                  className="px-4 py-4 text-center font-semibold text-gray-700 w-30"
                   onClick={() => {
                     setSortField("name");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -171,7 +171,7 @@ export default function CategoriesPage() {
                   Subcategorías
                 </th>
                 <th
-                  className="px-4 py-3 text-center font-semibold text-base w-40"
+                  className="px-4 py-4 text-center font-semibold text-gray-700 w-40"
                   onClick={() => {
                     setSortField("name");
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -179,7 +179,7 @@ export default function CategoriesPage() {
                 >
                   Categoría padre
                 </th>
-                <th className="px-4 py-3 text-center font-semibold text-base w-32">
+                <th className="px-4 py-4 text-center font-semibold text-gray-700 w-32">
                   Acciones
                 </th>
               </tr>
