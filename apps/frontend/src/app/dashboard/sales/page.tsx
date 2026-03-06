@@ -87,11 +87,11 @@ export default function SalesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Ventas</h1>
+        <h1 className="text-4xl font-bold">Ventas</h1>
         <Button
           onClick={handleGenerateSale}
           disabled={generating}
-          className="bg-gray-900 text-white"
+          className="px-7 py-5 rounded-lg bg-gray-900 text-white text-lg font-medium hover:bg-gray-700 transition-colors"
         >
           {generating ? "Generando..." : "+ Generar venta"}
         </Button>
@@ -111,23 +111,26 @@ export default function SalesPage() {
             className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
           />
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => {
-            setFilterStatus(e.target.value);
-            setPage(1);
-          }}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
-        >
-          <option value="">Todos los estados</option>
-          <option value="PREPARATION">En preparación</option>
-          <option value="SHIPPED">Enviado</option>
-          <option value="COMPLETED">Completado</option>
-          <option value="CANCELLED">Cancelado</option>
-        </select>
-        <span className="text-sm text-gray-500 ml-auto">
-          {filtered.length} venta{filtered.length !== 1 ? "s" : ""}
-        </span>
+
+        <div className="ml-auto">
+          <span className="text-sm text-gray-400 px-4">
+            {filtered.length} venta{filtered.length !== 1 ? "s" : ""}
+          </span>
+          <select
+            value={filterStatus}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
+          >
+            <option value="">Todos los estados</option>
+            <option value="PREPARATION">En preparación</option>
+            <option value="SHIPPED">Enviado</option>
+            <option value="COMPLETED">Completado</option>
+            <option value="CANCELLED">Cancelado</option>
+          </select>
+        </div>
       </div>
 
       {/* Tabla */}
@@ -138,13 +141,13 @@ export default function SalesPage() {
           <table className="w-full text-base">
             <thead>
               <tr className="border-b border-gray-300 bg-gray-100">
-                <th className="px-4 py-4 text-left font-semibold text-gray-700">
+                <th className="px-8 py-4 text-left font-semibold text-gray-700 w-64">
                   Cliente
                 </th>
-                <th className="px-4 py-4 text-center font-semibold text-gray-700 w-40">
+                <th className="px-4 py-4 text-center font-semibold text-gray-700 w-48">
                   Número de orden
                 </th>
-                <th className="px-4 py-4 text-center font-semibold text-gray-700 w-36">
+                <th className="px-4 py-4 text-center font-semibold text-gray-700 w-40">
                   Estado
                 </th>
                 <th className="px-4 py-4 text-center font-semibold text-gray-700 w-28">
@@ -179,7 +182,7 @@ export default function SalesPage() {
                     key={sale.id}
                     className="border-b border-gray-200 hover:bg-gray-50/60 transition-colors"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-8 py-3 max-w-xs">
                       <div className="font-medium text-gray-900">
                         {sale.customer?.name ?? "—"}
                       </div>
@@ -188,16 +191,16 @@ export default function SalesPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 whitespace-nowrap">
                         {sale.orderNumber}
                       </div>
                       <div className="text-xs text-gray-400">
                         {new Date(sale.createdAt).toLocaleDateString("es-AR")}
                       </div>
                     </td>
-                    <td className="px-8 py-3 text-center">
+                    <td className="px-4 py-3 text-center">
                       <span
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium ${statusColors[sale.status]}`}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap ${statusColors[sale.status]}`}
                       >
                         {statusLabels[sale.status]}
                       </span>
