@@ -7,10 +7,12 @@ import { getCategories } from "@/api/categories";
 import { Product, Category } from "@/types";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
-import { Pencil, Search, Trash2, X } from "lucide-react";
+import { Pencil, Trash2, X } from "lucide-react";
 import ProductFormModal from "./ProductFormModal";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import SearchInput from "@/components/shared/SearchInput";
+import TablePagination from "@/components/shared/TablePagination";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -119,15 +121,14 @@ export default function ProductsPage() {
       <div className="space-y-3"></div>
       <div className="flex items-center gap-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
+          <SearchInput
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
+            onChange={(v) => {
+              setSearch(v);
               setPage(1);
             }}
             placeholder="Buscar por nombre..."
-            className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-gray-100 bg-white"
+            width="w-72"
           />
         </div>
         <div className="ml-auto flex items-center gap-2">
@@ -330,24 +331,12 @@ export default function ProductsPage() {
             <span className="text-gray-600">
               Página {page} de {totalPages || 1}
             </span>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Siguiente
-              </Button>
-            </div>
+            <TablePagination
+              page={page}
+              totalPages={totalPages}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+            />
           </div>
         </div>
       )}
