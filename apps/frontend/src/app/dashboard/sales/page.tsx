@@ -135,9 +135,9 @@ export default function SalesPage() {
         <div className="text-gray-500">Cargando ventas...</div>
       ) : (
         <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
-              <tr className="border-b bg-gray-50">
+              <tr className="border-b bg-gray-100 bg-gray-50/80">
                 <th className="px-4 py-4 text-left font-semibold text-gray-700">
                   Cliente
                 </th>
@@ -177,7 +177,7 @@ export default function SalesPage() {
                 paginated.map((sale) => (
                   <tr
                     key={sale.id}
-                    className="border-b last:border-0 hover:bg-gray-50 transition-colors"
+                    className="border-b border-gray-200 hover:bg-gray-50/60 transition-colors"
                   >
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-900">

@@ -142,7 +142,7 @@ export default function CategoriesPage() {
         <div className="border rounded-xl border-gray-200 overflow-hidden bg-white shadow-sm">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b bg-gray-50">
+              <tr className="border-b bg-gray-100 bg-gray-50/80">
                 <th
                   className="px-4 py-4 text-center font-semibold text-gray-700 w-28"
                   onClick={() => {
@@ -199,7 +199,7 @@ export default function CategoriesPage() {
                   <React.Fragment key={cat.id}>
                     <tr
                       key={cat.id}
-                      className="border-b last:border-0 hover:bg-muted/50 cursor-pointer"
+                      className="border-b border-gray-200 hover:bg-gray-50/60 transition-colors"
                     >
                       {/* Posición */}
                       <td className="px-4 py-3 text-center text-muted-foreground">
@@ -231,11 +231,11 @@ export default function CategoriesPage() {
                       {/* Categoría padre */}
                       <td className="px-4 py-3 text-center">
                         {cat.parent ? (
-                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-100 text-blue-900 border border-blue-200">
                             {cat.parent.name}
                           </span>
                         ) : (
-                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-100 text-green-900 border border-green-200">
                             Principal
                           </span>
                         )}
