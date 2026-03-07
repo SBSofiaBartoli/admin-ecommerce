@@ -46,10 +46,10 @@ const navItems = [
     available: true,
   },
   {
-    href: "/dashboard/coming-soon",
+    href: "/dashboard/customers",
     label: "Clientes",
     icon: Users,
-    available: false,
+    available: true,
   },
   {
     href: "/dashboard/coming-soon",

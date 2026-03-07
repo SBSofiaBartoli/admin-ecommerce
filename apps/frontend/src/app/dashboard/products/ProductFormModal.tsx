@@ -214,7 +214,7 @@ export default function ProductFormModal({
         <DialogHeader>
           <DialogTitle className="text-lg font-bold flex items-center gap-2">
             <Package className="w-6 h-6 text-gray-500" />
-            {product ? "Editar producto" : "Nuevo producto"}
+            Editar producto
           </DialogTitle>
           <DialogDescription className="sr-only">
             {product
