@@ -1,10 +1,14 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsOptional,
   MinLength,
   IsUUID,
   IsEnum,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
+import { CreateVariantDto } from './create-product-variant.dto';
 
 enum ProductStatus {
   ACTIVE = 'ACTIVE',
@@ -35,4 +39,10 @@ export class CreateProductDto {
   @IsOptional()
   @IsEnum(ProductStatus)
   status?: ProductStatus;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantDto)
+  variants?: CreateVariantDto[];
 }
