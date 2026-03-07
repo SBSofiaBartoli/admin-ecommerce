@@ -8,12 +8,16 @@ import {
   Body,
   ParseUUIDPipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { UpdateProductVariantsDto } from './dto/update-product-variants.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -49,6 +53,15 @@ export class ProductsController {
     @Body() dto: UpdateProductVariantsDto,
   ) {
     return this.productsService.updateVariants(id, dto);
+  }
+
+  @Post(':id/images')
+  @UseInterceptors(FilesInterceptor('images', 10, { storage: memoryStorage() }))
+  uploadImages(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.productsService.uploadImages(id, files);
   }
 
   @Delete(':id')

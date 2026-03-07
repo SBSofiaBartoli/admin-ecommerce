@@ -3,10 +3,15 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { UpdateProductVariantsDto } from './dto/update-product-variants.dto';
+import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
 
   async findAll() {
     return this.prisma.product.findMany({
@@ -178,6 +183,21 @@ export class ProductsService {
         include: { variants: true, options: { include: { values: true } } },
       });
     });
+  }
+
+  async uploadImages(id: string, files: Express.Multer.File[]) {
+    await this.findOne(id);
+    const urls = await Promise.all(
+      files.map((file) => this.cloudinary.uploadImage(file)),
+    );
+    await Promise.all(
+      urls.map((url) =>
+        this.prisma.productImage.create({
+          data: { id: randomUUID(), url, productId: id },
+        }),
+      ),
+    );
+    return this.findOne(id);
   }
 
   async remove(id: string) {
