@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createProduct, updateProduct } from "@/api/products";
+import { uploadProductImages, updateProduct } from "@/api/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Trash2, ImagePlus, X, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface FormOption {
   name: string;
@@ -81,12 +82,13 @@ export default function ProductFormModal({
   const [gender, setGender] = useState(product?.gender ?? "");
   const [categoryId, setCategoryId] = useState(product?.categoryId ?? "");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [status, setStatus] = useState<ProductStatus>(
     product?.status ?? "ACTIVE",
   );
   const [options, setOptions] = useState<FormOption[]>([]);
   const [variants, setVariants] = useState<ProductVariantRow[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
     if (open) {
@@ -95,10 +97,11 @@ export default function ProductFormModal({
       setBrand(product?.brand ?? "");
       setGender(product?.gender ?? "");
       setCategoryId(product?.categoryId ?? "");
-      setError("");
       setStatus(product?.status ?? "ACTIVE");
       setOptions([]);
       setVariants([]);
+      setImageFiles([]);
+      setImagePreviewUrls([]);
     }
   }, [open, product]);
 
@@ -152,22 +155,27 @@ export default function ProductFormModal({
     );
   }
 
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    setImageFiles((prev) => [...prev, ...files]);
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setImagePreviewUrls((prev) => [...prev, ...urls]);
+  }
+
+  function removeImage(index: number) {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!product) return;
     if (!categoryId || categoryId === "none") {
-      setError("Seleccioná una categoría");
+      toast.error("Seleccioná una categoría");
       return;
     }
     setLoading(true);
-    setError("");
     try {
-      const variantsData = variants.map((v) => ({
-        combination: v.combination,
-        price: parseFloat(v.price) || 0,
-        sku: v.sku || undefined,
-        stock: parseInt(v.stock) || 0,
-      }));
-
       const data = {
         name,
         description: description || undefined,
@@ -175,20 +183,23 @@ export default function ProductFormModal({
         gender: gender || undefined,
         categoryId,
         status,
-        variants: variantsData.length > 0 ? variantsData : undefined,
       };
-      if (product) {
-        await updateProduct(product.id, data);
-      } else {
-        await createProduct(data);
+      await updateProduct(product.id, data);
+
+      if (imageFiles.length > 0) {
+        const formData = new FormData();
+        imageFiles.forEach((f) => formData.append("images", f));
+        await uploadProductImages(product.id, formData);
       }
+
+      toast.success("Producto actualizado correctamente");
       onSuccess();
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       if (message.includes("already exists") || message.includes("unique")) {
-        setError("Ya existe un producto con ese nombre");
+        toast.error("Ya existe un producto con ese nombre");
       } else {
-        setError("Error al guardar el producto");
+        toast.error("Error al guardar el producto");
       }
     } finally {
       setLoading(false);
@@ -332,18 +343,63 @@ export default function ProductFormModal({
                   </div>
                 </div>
 
-                {/* Imágenes — UI lista para Cloudinary */}
                 <div className="space-y-1.5">
-                  <Label className="text-sm">Imágenes del Producto</Label>
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors w-full justify-center"
-                  >
-                    <ImagePlus className="w-5 h-5" />
-                    Subir Imágenes
-                  </button>
-                  <p className="text-sm text-gray-400 text-center">
-                    Próximamente disponible
+                  <Label className="text-xs">Imágenes del Producto</Label>
+
+                  {/* Imágenes ya guardadas */}
+                  {product?.images && product.images.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {product.images.map((img) => (
+                        <div key={img.id} className="relative w-16 h-16">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={img.url}
+                            alt="imagen"
+                            className="rounded-lg object-cover border border-gray-200"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Previews nuevas */}
+                  {imagePreviewUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {imagePreviewUrls.map((url, i) => (
+                        <div key={i} className="relative w-16 h-16 group">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={url}
+                            alt="preview"
+                            className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(i)}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs items-center justify-center hidden group-hover:flex"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <label className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer">
+                    <ImagePlus className="w-4 h-4" />
+                    {imageFiles.length > 0
+                      ? `${imageFiles.length} imagen${imageFiles.length !== 1 ? "es" : ""} seleccionada${imageFiles.length !== 1 ? "s" : ""}`
+                      : "Subir Imágenes"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-xs text-gray-400">
+                    Las imágenes se guardan al confirmar
                   </p>
                 </div>
               </div>
@@ -478,8 +534,6 @@ export default function ProductFormModal({
             </div>
           </div>
 
-          {error && <p className="text-dm text-red-500">{error}</p>}
-
           <DialogFooter>
             <Button
               type="button"
@@ -494,13 +548,7 @@ export default function ProductFormModal({
               disabled={loading}
               className="bg-gray-900 hover:bg-gray-700"
             >
-              {loading
-                ? product
-                  ? "Guardando..."
-                  : "Creando..."
-                : product
-                  ? "Guardar cambios"
-                  : "Crear"}
+              {loading ? "Guardando..." : "Guardar cambios"}
             </Button>
           </DialogFooter>
         </form>
