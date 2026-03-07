@@ -117,10 +117,23 @@ export class SalesService {
     });
   }
 
-  async updateStatus(id: string, status: SaleStatus) {
-    return this.prisma.sale.update({
-      where: { id },
-      data: { status },
+  async updateStatus(id: string, status: SaleStatus, note?: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const sale = await tx.sale.update({
+        where: { id },
+        data: { status },
+      });
+
+      await tx.saleHistory.create({
+        data: {
+          id: randomUUID(),
+          saleId: id,
+          status,
+          note: note ?? null,
+        },
+      });
+
+      return sale;
     });
   }
 }

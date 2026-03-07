@@ -27,7 +27,11 @@ export class SalesController {
   }
 
   @Put(':id/status')
-  updateStatus(@Param('id') id: string, @Body('status') status: SaleStatus) {
-    return this.salesService.updateStatus(id, status);
+  updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: SaleStatus,
+    @Body('note') note?: string,
+  ) {
+    return this.salesService.updateStatus(id, status, note);
   }
 }
