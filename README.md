@@ -62,6 +62,7 @@ El panel permite administrar:
 ---
 
 # 🏗️ Arquitectura del proyecto
+```bash
 admin-ecommerce/
 ├── apps/
 │ ├── backend/
@@ -109,7 +110,7 @@ admin-ecommerce/
 ├── .env.example
 ├── .gitignore
 └── README.md
-
+```
 ---
 
 # 🗄️ Modelos de base de datos
