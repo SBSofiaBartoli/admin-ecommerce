@@ -8,15 +8,91 @@ import {
   Package,
   ShoppingCart,
   LogOut,
+  Users,
+  Bookmark,
+  BadgePercent,
+  Gift,
+  BarChart2,
+  Star,
+  Bell,
+  Settings,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logout } from "@/api";
 
 const navItems = [
-  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
-  { href: "/dashboard/categories", label: "Categorías", icon: Tag },
-  { href: "/dashboard/products", label: "Productos", icon: Package },
-  { href: "/dashboard/sales", label: "Ventas", icon: ShoppingCart },
+  {
+    href: "/dashboard",
+    label: "Inicio",
+    icon: LayoutDashboard,
+    available: true,
+  },
+  {
+    href: "/dashboard/categories",
+    label: "Categorías",
+    icon: Tag,
+    available: true,
+  },
+  {
+    href: "/dashboard/products",
+    label: "Productos",
+    icon: Package,
+    available: true,
+  },
+  {
+    href: "/dashboard/sales",
+    label: "Ventas",
+    icon: ShoppingCart,
+    available: true,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Clientes",
+    icon: Users,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Marcas",
+    icon: Bookmark,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Descuentos",
+    icon: BadgePercent,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Puntos de Lealtad",
+    icon: Gift,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Membresías",
+    icon: Star,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Estadísticas",
+    icon: BarChart2,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Notificaciones",
+    icon: Bell,
+    available: false,
+  },
+  {
+    href: "/dashboard/coming-soon",
+    label: "Configuración",
+    icon: Settings,
+    available: false,
+  },
 ];
 
 export default function Sidebar() {
@@ -39,9 +115,21 @@ export default function Sidebar() {
             item.href === "/dashboard"
               ? pathname === "/dashboard"
               : pathname.startsWith(item.href);
+          if (!item.available) {
+            return (
+              <button
+                key={item.label}
+                onClick={() => router.push(item.href)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-50 w-full transition-colors"
+              >
+                <Icon className="w-4 h-4" />
+                {item.label}
+              </button>
+            );
+          }
           return (
             <Link
-              key={item.href}
+              key={item.label}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-colors ${
                 isActive
@@ -55,7 +143,7 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-gray-100">
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full transition-colors"
