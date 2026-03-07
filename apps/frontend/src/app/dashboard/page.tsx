@@ -209,7 +209,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex gap-2 mt-4 justify-between">
             <button
-              onClick={() => router.push("/dashboard/products?new=true")}
+              onClick={() => router.push("/dashboard/products/new")}
               className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 flex items-center gap-1 shadow-sm"
             >
               <span className="text-lg leading-none">+</span> Añadir
