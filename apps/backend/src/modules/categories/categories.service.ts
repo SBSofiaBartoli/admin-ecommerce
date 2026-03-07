@@ -44,7 +44,7 @@ export class CategoriesService {
   }
 
   async findChildren(parentId: string) {
-    return (this.prisma.category as any).findMany({
+    return this.prisma.category.findMany({
       where: { parentId },
       orderBy: { position: 'asc' },
     });

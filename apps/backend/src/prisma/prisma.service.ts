@@ -30,6 +30,10 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     return this.client.productVariant;
   }
 
+  get $transaction() {
+    return this.client.$transaction.bind(this.client);
+  }
+
   async onModuleInit() {
     await this.client.$connect();
   }
