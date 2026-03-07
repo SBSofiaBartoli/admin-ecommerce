@@ -7,7 +7,7 @@ import { getCategories } from "@/api/categories";
 import { Product, Category } from "@/types";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
-import { ArchiveRestore, Pencil, Trash2, X } from "lucide-react";
+import { ArchiveRestore, Package, Pencil, Trash2, X } from "lucide-react";
 import ProductFormModal from "./ProductFormModal";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -282,14 +282,12 @@ export default function ProductsPage() {
                           <Image
                             src={firstImage}
                             alt={product.name}
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                             className="rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
-                            📦
-                          </div>
+                          <Package className="w-12 h-12 text-gray-400" />
                         )}
                       </td>
                       <td className="px-4 py-3">
