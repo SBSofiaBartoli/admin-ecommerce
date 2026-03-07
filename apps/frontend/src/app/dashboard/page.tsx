@@ -40,7 +40,8 @@ export default function DashboardPage() {
     (sum, p) => sum + (p.variants?.reduce((s, v) => s + v.stock, 0) ?? 0),
     0,
   );
-  const totalSalesAmount = sales.reduce((sum, s) => sum + s.total, 0);
+  const paidSales = sales.filter((s) => s.paymentStatus === "PAID");
+  const totalSalesAmount = paidSales.reduce((sum, s) => sum + s.total, 0);
   const totalValue = products.reduce((sum, p) => {
     const productStock = p.variants?.reduce((s, v) => s + v.stock, 0) ?? 0;
     const productPrice = p.variants?.[0]?.price ?? 0;
@@ -75,7 +76,7 @@ export default function DashboardPage() {
               <ShoppingCart className="w-4 h-4 text-green-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold">{sales.length}</p>
+          <p className="text-2xl font-bold">{paidSales.length}</p>
           <p className="text-sm text-gray-500">
             Total: ${totalSalesAmount.toFixed(2)}
           </p>
