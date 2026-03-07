@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentStatus, SaleStatus } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
@@ -8,11 +8,6 @@ export class SalesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    const variant = await this.prisma.productVariant.findFirst({
-      where: { stock: { gt: 0 } },
-    });
-    if (!variant)
-      throw new BadRequestException('No hay variantes con stock disponible');
     return this.prisma.sale.findMany({
       include: {
         customer: true,
