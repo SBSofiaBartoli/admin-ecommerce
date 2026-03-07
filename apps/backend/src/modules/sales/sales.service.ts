@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentStatus, SaleStatus } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
@@ -26,12 +26,6 @@ export class SalesService {
   }
 
   async create() {
-    const statuses: SaleStatus[] = [
-      'PREPARATION',
-      'SHIPPED',
-      'COMPLETED',
-      'CANCELLED',
-    ];
     const paymentStatuses: PaymentStatus[] = ['PAID', 'FAILED'];
     const paymentMethods = [
       'Tarjeta de Crédito',
@@ -40,51 +34,86 @@ export class SalesService {
       'Efectivo',
     ];
 
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+    const availableVariants = await this.prisma.productVariant.findMany({
+      where: { stock: { gt: 0 } },
+      include: { product: true },
+    });
+
+    if (!availableVariants.length) {
+      throw new BadRequestException('No hay variantes con stock disponible');
+    }
+
+    const shuffled = availableVariants.sort(() => Math.random() - 0.5);
+    const selectedVariants = shuffled.slice(0, Math.min(3, shuffled.length));
+    const customers = await this.prisma.customer.findMany();
+    if (!customers.length) {
+      throw new BadRequestException('No hay clientes disponibles');
+    }
+    const randomCustomer =
+      customers[Math.floor(Math.random() * customers.length)];
     const randomPayment =
       paymentStatuses[Math.floor(Math.random() * paymentStatuses.length)];
     const randomMethod =
       paymentMethods[Math.floor(Math.random() * paymentMethods.length)];
-    const randomTotal = Math.floor(Math.random() * 50000) / 100 + 10;
+    const randomStatus: SaleStatus = 'PREPARATION';
+    const total = selectedVariants.reduce((sum, v) => sum + v.price, 0);
 
-    return this.prisma.sale.create({
-      data: {
-        orderNumber: `ORD-${Date.now()}`,
-        status: randomStatus,
-        paymentStatus: randomPayment,
-        paymentMethod: randomMethod,
-        total: randomTotal,
-        customer: {
-          create: {
-            id: randomUUID(),
-            name: 'Cliente Demo',
-            email: `demo-${Date.now()}@demo.com`,
+    return this.prisma.$transaction(async (tx) => {
+      const sale = await tx.sale.create({
+        data: {
+          id: randomUUID(),
+          orderNumber: `ORD-${Date.now()}`,
+          status: randomStatus,
+          paymentStatus: randomPayment,
+          paymentMethod: randomMethod,
+          total,
+          customerId: randomCustomer.id,
+          history: {
+            create: {
+              id: randomUUID(),
+              status: randomStatus,
+              note: 'Pedido creado',
+            },
+          },
+          shipment: {
+            create: {
+              id: randomUUID(),
+              carrier: 'OCA',
+              tracking: `TRACK-${Date.now()}`,
+              shippedAt: null,
+            },
           },
         },
-        history: {
-          create: {
+      });
+
+      for (const variant of selectedVariants) {
+        await tx.saleItem.create({
+          data: {
             id: randomUUID(),
-            status: randomStatus,
-            note: `Pedido creado con estado ${randomStatus}`,
+            saleId: sale.id,
+            variantId: variant.id,
+            quantity: 1,
+            price: variant.price,
+          },
+        });
+
+        await tx.productVariant.update({
+          where: { id: variant.id },
+          data: { stock: { decrement: 1 } },
+        });
+      }
+
+      return tx.sale.findUnique({
+        where: { id: sale.id },
+        include: {
+          customer: true,
+          history: true,
+          shipment: true,
+          items: {
+            include: { variant: { include: { product: true } } },
           },
         },
-        shipment: {
-          create: {
-            id: randomUUID(),
-            carrier: 'OCA',
-            tracking: `TRACK-${Date.now()}`,
-            shippedAt:
-              randomStatus === 'SHIPPED' || randomStatus === 'COMPLETED'
-                ? new Date().toISOString()
-                : null,
-          },
-        },
-      },
-      include: {
-        customer: true,
-        history: true,
-        shipment: true,
-      },
+      });
     });
   }
 
