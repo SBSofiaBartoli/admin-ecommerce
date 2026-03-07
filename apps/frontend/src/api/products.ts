@@ -16,6 +16,12 @@ export async function createProduct(data: {
   gender?: string;
   categoryId: string;
   status?: ProductStatus;
+  variants?: Array<{
+    combination: Array<{ optionName: string; value: string }>;
+    price: number;
+    sku?: string;
+    stock: number;
+  }>;
 }): Promise<Product> {
   return apiClient<Product>("/products", {
     method: "POST",
@@ -36,6 +42,31 @@ export async function updateProduct(
   return apiClient<Product>(`/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
+  });
+}
+
+export async function uploadProductImages(
+  id: string,
+  formData: FormData,
+): Promise<Product> {
+  return apiClient<Product>(`/products/${id}/images`, {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export async function updateProductVariants(
+  id: string,
+  variants: Array<{
+    combination: Array<{ optionName: string; value: string }>;
+    price: number;
+    sku?: string;
+    stock: number;
+  }>,
+): Promise<Product> {
+  return apiClient<Product>(`/products/${id}/variants`, {
+    method: "PUT",
+    body: JSON.stringify({ variants }),
   });
 }
 
