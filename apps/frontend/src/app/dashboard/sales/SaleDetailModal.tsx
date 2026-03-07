@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -63,6 +64,9 @@ export default function SaleDetailModal({
             <Truck className="w-5 h-5" />
             Gestionar Orden
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Gestioná el estado y los detalles de la orden
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 text-sm">
@@ -193,17 +197,34 @@ export default function SaleDetailModal({
           <Button variant="outline" onClick={onClose}>
             Cerrar
           </Button>
-          {nextStatus && (
-            <Button
-              className="bg-gray-900 text-white"
-              onClick={() => {
-                onUpdateStatus(sale.id, nextStatus, note);
-                onClose();
-              }}
-            >
-              {nextStatusLabel[sale.status]}
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {sale.paymentStatus === "FAILED" && sale.status !== "CANCELLED" && (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  onUpdateStatus(
+                    sale.id,
+                    "CANCELLED",
+                    "Cancelado por pago fallido",
+                  );
+                  onClose();
+                }}
+              >
+                Cancelar pedido
+              </Button>
+            )}
+            {nextStatus && (
+              <Button
+                className="bg-gray-900 text-white"
+                onClick={() => {
+                  onUpdateStatus(sale.id, nextStatus, note);
+                  onClose();
+                }}
+              >
+                {nextStatusLabel[sale.status]}
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
