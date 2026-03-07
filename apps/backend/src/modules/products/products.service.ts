@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductVariantsDto } from './dto/update-product-variants.dto';
 
 @Injectable()
 export class ProductsService {
@@ -104,6 +105,78 @@ export class ProductsService {
         ...rest,
         ...(categoryId && { category: { connect: { id: categoryId } } }),
       },
+    });
+  }
+
+  async updateVariants(id: string, dto: UpdateProductVariantsDto) {
+    await this.findOne(id);
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.variantOptionValue.deleteMany({
+        where: { variant: { productId: id } },
+      });
+      await tx.productVariant.deleteMany({ where: { productId: id } });
+      await tx.productOptionValue.deleteMany({
+        where: { option: { productId: id } },
+      });
+      await tx.productOption.deleteMany({ where: { productId: id } });
+
+      const optionMap = new Map<string, Set<string>>();
+      for (const v of dto.variants) {
+        for (const c of v.combination) {
+          if (!optionMap.has(c.optionName))
+            optionMap.set(c.optionName, new Set());
+          optionMap.get(c.optionName)!.add(c.value);
+        }
+      }
+
+      const createdOptions = new Map<
+        string,
+        { id: string; values: Map<string, string> }
+      >();
+      for (const [optionName, optionValues] of optionMap.entries()) {
+        const option = await tx.productOption.create({
+          data: {
+            name: optionName,
+            productId: id,
+            values: { create: [...optionValues].map((v) => ({ value: v })) },
+          },
+          include: { values: true },
+        });
+        const valueMap = new Map<string, string>(
+          (option.values as Array<{ id: string; value: string }>).map(
+            (v): [string, string] => [v.value, v.id],
+          ),
+        );
+        createdOptions.set(optionName, { id: option.id, values: valueMap });
+      }
+
+      for (const v of dto.variants) {
+        const variant = await tx.productVariant.create({
+          data: {
+            price: v.price,
+            sku: v.sku,
+            stock: v.stock,
+            productId: id,
+          },
+        });
+
+        for (const c of v.combination) {
+          const option = createdOptions.get(c.optionName)!;
+          await tx.variantOptionValue.create({
+            data: {
+              variantId: variant.id,
+              optionId: option.id,
+              valueId: option.values.get(c.value)!,
+            },
+          });
+        }
+      }
+
+      return tx.product.findUnique({
+        where: { id },
+        include: { variants: true, options: { include: { values: true } } },
+      });
     });
   }
 

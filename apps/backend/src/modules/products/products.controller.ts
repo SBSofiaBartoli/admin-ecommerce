@@ -13,6 +13,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { UpdateProductVariantsDto } from './dto/update-product-variants.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -40,6 +41,14 @@ export class ProductsController {
     @Body() dto: UpdateProductDto,
   ) {
     return this.productsService.update(id, dto);
+  }
+
+  @Put(':id/variants')
+  updateVariants(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateProductVariantsDto,
+  ) {
+    return this.productsService.updateVariants(id, dto);
   }
 
   @Delete(':id')
