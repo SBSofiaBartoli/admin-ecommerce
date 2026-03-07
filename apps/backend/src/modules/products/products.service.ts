@@ -202,6 +202,17 @@ export class ProductsService {
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.product.delete({ where: { id } });
+    return this.prisma.$transaction(async (tx) => {
+      await tx.variantOptionValue.deleteMany({
+        where: { variant: { productId: id } },
+      });
+      await tx.productVariant.deleteMany({ where: { productId: id } });
+      await tx.productOptionValue.deleteMany({
+        where: { option: { productId: id } },
+      });
+      await tx.productOption.deleteMany({ where: { productId: id } });
+      await tx.productImage.deleteMany({ where: { productId: id } });
+      return tx.product.delete({ where: { id } });
+    });
   }
 }
