@@ -15,7 +15,7 @@ interface SaleDetailModalProps {
   open: boolean;
   onClose: () => void;
   sale: Sale;
-  onUpdateStatus: (id: string, status: SaleStatus) => void;
+  onUpdateStatus: (id: string, status: SaleStatus, note?: string) => void;
 }
 
 const statusFlow: Record<SaleStatus, SaleStatus | null> = {
@@ -189,7 +189,7 @@ export default function SaleDetailModal({
         </div>
 
         {/* ACCIONES */}
-        <div className="flex justify-between mt-2 pt-2 border-t">
+        <div className="flex justify-between mt-2 pt-2 border-t border-gray-200">
           <Button variant="outline" onClick={onClose}>
             Cerrar
           </Button>
@@ -197,7 +197,7 @@ export default function SaleDetailModal({
             <Button
               className="bg-gray-900 text-white"
               onClick={() => {
-                onUpdateStatus(sale.id, nextStatus);
+                onUpdateStatus(sale.id, nextStatus, note);
                 onClose();
               }}
             >

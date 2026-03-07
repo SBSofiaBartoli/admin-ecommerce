@@ -14,9 +14,10 @@ export async function createSale(): Promise<Sale> {
 export async function updateSaleStatus(
   id: string,
   status: SaleStatus,
+  note?: string,
 ): Promise<Sale> {
   return apiClient<Sale>(`/sales/${id}/status`, {
     method: "PUT",
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, note }),
   });
 }

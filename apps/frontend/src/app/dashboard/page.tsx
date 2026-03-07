@@ -53,48 +53,48 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Inicio</h1>
+      <h1 className="text-4xl font-bold">Inicio</h1>
 
       {/* Stats cards */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Productos</span>
+            <span className="text-dm text-gray-600">Productos</span>
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <Package className="w-4 h-4 text-blue-600" />
             </div>
           </div>
           <p className="text-2xl font-bold">{products.length}</p>
-          <p className="text-xs text-gray-400">Stock total: {totalStock} u.</p>
+          <p className="text-sm text-gray-500">Stock total: {totalStock} u.</p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Ventas</span>
+            <span className="text-dm text-gray-600">Ventas</span>
             <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
               <ShoppingCart className="w-4 h-4 text-green-600" />
             </div>
           </div>
           <p className="text-2xl font-bold">{sales.length}</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-sm text-gray-500">
             Total: ${totalSalesAmount.toFixed(2)}
           </p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Categorías</span>
+            <span className="text-dm text-gray-600">Categorías</span>
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
               <Tag className="w-4 h-4 text-purple-600" />
             </div>
           </div>
           <p className="text-2xl font-bold">{categories}</p>
-          <p className="text-xs text-gray-400">Categorías registradas</p>
+          <p className="text-sm text-gray-500">Categorías registradas</p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">En preparación</span>
+            <span className="text-dm text-gray-600">En preparación</span>
             <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-yellow-600" />
             </div>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
           <p className="text-2xl font-bold">
             {sales.filter((s) => s.status === "PREPARATION").length}
           </p>
-          <p className="text-xs text-gray-400">Pedidos pendientes</p>
+          <p className="text-sm text-gray-500">Pedidos pendientes</p>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export default function DashboardPage() {
               href="/dashboard/sales"
               className="text-xs text-blue-500 hover:underline"
             >
-              <button className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50">
+              <button className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 shadow-sm">
                 Ver todas
               </button>
             </Link>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
               recentSales.map((sale) => (
                 <div
                   key={sale.id}
-                  className="flex items-center justify-between py-2 border-b last:border-0 "
+                  className="flex items-center justify-between py-2 border-b last:border-0 border-gray-300"
                 >
                   <div>
                     <p className="text-sm font-medium">
@@ -207,15 +207,15 @@ export default function DashboardPage() {
               </p>
             )}
           </div>
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-4 justify-between">
             <button
               onClick={() => router.push("/dashboard/products?new=true")}
-              className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 flex items-center gap-1"
+              className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 flex items-center gap-1 shadow-sm"
             >
-              <span className="text-base leading-none">+</span> Añadir
+              <span className="text-lg leading-none">+</span> Añadir
             </button>
             <Link href="/dashboard/products">
-              <button className="text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50">
+              <button className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 shadow-sm">
                 Ver todos
               </button>
             </Link>
@@ -261,7 +261,7 @@ export default function DashboardPage() {
                   sorted.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between py-2 border-b last:border-0"
+                      className="flex items-center justify-between py-2 border-b last:border-0 border-gray-300"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-gray-400 w-4">

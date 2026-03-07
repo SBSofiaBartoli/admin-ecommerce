@@ -78,9 +78,13 @@ export default function SalesPage() {
     }
   }
 
-  async function handleUpdateStatus(id: string, status: SaleStatus) {
+  async function handleUpdateStatus(
+    id: string,
+    status: SaleStatus,
+    note?: string,
+  ) {
     try {
-      await updateSaleStatus(id, status);
+      await updateSaleStatus(id, status, note);
       toast.success("Estado actualizado");
       void load();
     } catch {
