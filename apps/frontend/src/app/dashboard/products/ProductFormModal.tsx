@@ -31,9 +31,10 @@ interface FormOption {
 }
 
 interface ProductVariantRow {
-  combination: string[];
+  combination: Array<{ optionName: string; value: string }>;
   price: string;
   sku: string;
+  stock: string;
 }
 
 interface ProductFormModalProps {
@@ -57,9 +58,13 @@ function generateVariants(options: FormOption[]): ProductVariantRow[] {
     [],
   );
   return combinations.map((combo) => ({
-    combination: combo,
+    combination: combo.map((value, index) => ({
+      optionName: filledOptions[index].name,
+      value,
+    })),
     price: "",
     sku: "",
+    stock: "",
   }));
 }
 
@@ -137,7 +142,11 @@ export default function ProductFormModal({
     );
   }
 
-  function updateVariant(index: number, field: "price" | "sku", value: string) {
+  function updateVariant(
+    index: number,
+    field: "price" | "sku" | "stock",
+    value: string,
+  ) {
     setVariants((prev) =>
       prev.map((v, i) => (i === index ? { ...v, [field]: value } : v)),
     );
@@ -156,7 +165,7 @@ export default function ProductFormModal({
         combination: v.combination,
         price: parseFloat(v.price) || 0,
         sku: v.sku || undefined,
-        stock: 0,
+        stock: parseInt(v.stock) || 0,
       }));
 
       const data = {
@@ -408,6 +417,7 @@ export default function ProductFormModal({
                       <span className="col-span-5">Variante</span>
                       <span className="col-span-4">Precio *</span>
                       <span className="col-span-3">SKU</span>
+                      <span className="col-span-2">Stock</span>
                     </div>
                     {variants.map((variant, vIndex) => (
                       <div
@@ -417,11 +427,11 @@ export default function ProductFormModal({
                         <div className="col-span-5 flex flex-wrap gap-1">
                           {variant.combination.map((val) => (
                             <Badge
-                              key={val}
+                              key={val.value}
                               variant="outline"
                               className="text-sm bg-white border-gray-200 px-1.5 py-0"
                             >
-                              {val}
+                              {val.value}
                             </Badge>
                           ))}
                         </div>
@@ -446,6 +456,18 @@ export default function ProductFormModal({
                               updateVariant(vIndex, "sku", e.target.value)
                             }
                             className="border-gray-200 h-7 text-sm"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            value={variant.stock}
+                            onChange={(e) =>
+                              updateVariant(vIndex, "stock", e.target.value)
+                            }
+                            className="border-gray-200 h-7 text-xs"
                           />
                         </div>
                       </div>

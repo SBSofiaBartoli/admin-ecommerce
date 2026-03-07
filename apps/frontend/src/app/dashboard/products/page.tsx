@@ -28,11 +28,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [filterGender, setFilterGender] = useState("");
@@ -122,10 +124,7 @@ export default function ProductsPage() {
             Importar productos
           </Button>
           <Button
-            onClick={() => {
-              setSelected(undefined);
-              setModalOpen(true);
-            }}
+            onClick={() => router.push("/dashboard/products/new")}
             className="px-7 py-5 rounded-lg bg-gray-900 text-white text-lg font-medium hover:bg-gray-700 transition-colors"
           >
             + Nuevo producto
