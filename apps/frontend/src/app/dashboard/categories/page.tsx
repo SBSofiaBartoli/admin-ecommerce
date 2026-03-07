@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import CategoryDetailModal from "./CategoryDetailModal";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -38,6 +39,8 @@ export default function CategoriesPage() {
   const [childrenMap, setChildrenMap] = useState<Record<string, Category[]>>(
     {},
   );
+  const [detailCategory, setDetailCategory] = useState<Category | undefined>();
+  const [detailOpen, setDetailOpen] = useState(false);
 
   async function loadCategories() {
     try {
@@ -269,7 +272,28 @@ export default function CategoriesPage() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    setDetailCategory(cat);
+                                    if (!childrenMap[cat.id]) {
+                                      getCategoryChildren(cat.id)
+                                        .then((children) =>
+                                          setChildrenMap((prev) => ({
+                                            ...prev,
+                                            [cat.id]: children,
+                                          })),
+                                        )
+                                        .catch(() =>
+                                          toast.error(
+                                            "Error al cargar subcategorías",
+                                          ),
+                                        );
+                                    }
+                                    setDetailOpen(true);
+                                  }}
+                                >
                                   <Eye className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
@@ -353,6 +377,17 @@ export default function CategoriesPage() {
             onNext={() => setPage((p) => p + 1)}
           />
         </div>
+      )}
+      {detailCategory && (
+        <CategoryDetailModal
+          open={detailOpen}
+          onClose={() => {
+            setDetailOpen(false);
+            setDetailCategory(undefined);
+          }}
+          category={detailCategory}
+          subcategories={childrenMap[detailCategory.id] ?? []}
+        />
       )}
       <CategoryFormModal
         key={selectedCategory?.id ?? "new"}
