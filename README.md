@@ -201,46 +201,57 @@ Password: admin123
 ```bash
 git clone https://github.com/tu-usuario/admin-ecommerce.git
 cd admin-ecommerce
-
+```
 2️⃣ Instalar dependencias
 Backend
+```bash
 cd apps/backend
 npm install
-
+```
 Frontend
+```bash
 cd apps/frontend
 npm install
-
+```
 3️⃣ Configurar variables de entorno
 Backend
 Archivo:
+```bash
 apps/backend/.env
+```
 Variables:
+```bash
 DATABASE_URL=
 JWT_SECRET=
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-
+```
 Frontend
 Archivo:
+```bash
 apps/frontend/.env.local
+```
 Variable:
+```bash
 NEXT_PUBLIC_API_URL=http://localhost:3000
-
+```
 4️⃣ Migraciones
+```bash
 cd apps/backend
 
 npx prisma migrate dev
 npx prisma db seed
-
+```
 5️⃣ Ejecutar proyecto
 Backend
+```bash
 npm run start:dev
-
+```
 Frontend
+```bash
 npm run dev
-
+```
 📌 Características técnicas destacadas
 
 Arquitectura modular con NestJS
